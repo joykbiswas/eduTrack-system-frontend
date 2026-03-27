@@ -37,30 +37,30 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
   ];
 };
 
-export const doctorNavItems: NavSection[] = [
+export const teacherNavItems: NavSection[] = [
   {
-    title: " Patient Management",
+    title: " Student Management",
     items: [
       {
-        title: "Appointments",
-        href: "/doctor/dashboard/appointments",
+        title: "Classes",
+        href: "/teacher/dashboard/classes",
         icon: "Calender",
       },
       {
-        title: "My Schedules",
-        href: "/doctor/dashboard/my-schedules",
+        title: "My Timetable",
+        href: "/teacher/dashboard/my-timetable",
         icon: "Clock",
       },
-      {
-        title: "Prescriptions",
-        href: "/doctor/dashboard/prescriptions",
-        icon: "FileText",
-      },
-      {
-        title: "My Reviews",
-        href: "/doctor/dashboard/my-reviews",
-        icon: "Star",
-      },
+      // {
+      //   title: "Grades",
+      //   href: "/teacher/dashboard/grades",
+      //   icon: "FileText",
+      // },
+      // {
+      //   title: "My Feedback",
+      //   href: "/teacher/dashboard/my-feedback",
+      //   icon: "Star",
+      // },
     ],
   },
 ];
@@ -74,16 +74,16 @@ export const adminNavItems: NavSection[] = [
         href: "/admin/dashboard/admins-management",
         icon: "Shield",
       },
-      {
-        title: "Doctors",
-        href: "/admin/dashboard/doctors-management",
-        icon: "Stethoscope",
-      },
-      {
-        title: "Patients",
-        href: "/admin/dashboard/patients-management",
-        icon: "Users",
-      },
+      // {
+      //   title: "Teachers",
+      //   href: "/admin/dashboard/teachers-management",
+      //   icon: "Stethoscope",
+      // },
+      // {
+      //   title: "Students",
+      //   href: "/admin/dashboard/students-management",
+      //   icon: "Users",
+      // },
     ],
   },
   {
@@ -99,21 +99,21 @@ export const adminNavItems: NavSection[] = [
         href: "/admin/dashboard/schedules-management",
         icon: "Clock",
       },
-      {
-        title: "Specialties",
-        href: "/admin/dashboard/specialties-management",
-        icon: "Hospital",
-      },
-      {
-        title: "Doctor Schedules",
-        href: "/admin/dashboard/doctor-schedules-managament",
-        icon: "CalendarClock",
-      },
-      {
-        title: "Doctor Specialties",
-        href: "/admin/dashboard/doctor-specialties-management",
-        icon: "Stethoscope",
-      },
+      // {
+      //   title: "Subjects",
+      //   href: "/admin/dashboard/subjects-management",
+      //   icon: "Hospital",
+      // },
+      // {
+      //   title: "Teacher Timetable",
+      //   href: "/admin/dashboard/teacher-timetable-management",
+      //   icon: "CalendarClock",
+      // },
+      // {
+      //   title: "Teacher Subjects",
+      //   href: "/admin/dashboard/teacher-subjects-management",
+      //   icon: "Stethoscope",
+      // },
       {
         title: "Payments",
         href: "/admin/dashboard/payments-management",
@@ -133,33 +133,33 @@ export const adminNavItems: NavSection[] = [
   },
 ];
 
-export const patientNavItems: NavSection[] = [
+export const studentNavItems: NavSection[] = [
   {
-    title: "Appointments",
+    title: "Enrollments",
     items: [
       {
-        title: "My Appointments",
-        href: "/dashboard/my-appointments",
+        title: "My Enrollments",
+        href: "/dashboard/my-enrollments",
         icon: "Calendar",
       },
       {
-        title: "Book Appointment",
-        href: "/dashboard/book-appointments",
+        title: "Enroll Class",
+        href: "/dashboard/enroll-class",
         icon: "ClipboardList",
       },
     ],
   },
   {
-    title: "Medical Records",
+    title: "Academic Records",
     items: [
       {
-        title: "My Prescriptions",
-        href: "/dashboard/my-prescriptions",
+        title: "My Grades",
+        href: "/dashboard/my-grades",
         icon: "FileText",
       },
       {
-        title: "Health Records",
-        href: "/dashboard/health-records",
+        title: "Academic Records",
+        href: "/dashboard/academic-records",
         icon: "Activity",
       },
     ],
@@ -175,9 +175,9 @@ export const getNavItemsByRole = (role: UserRole): NavSection[] => {
       return [...commonNavItems, ...adminNavItems];
 
     case "TEACHER":
-      return [...commonNavItems, ...doctorNavItems];
+      return [...commonNavItems, ...teacherNavItems];
 
-    case "PATIENT":
-      return [...commonNavItems, ...patientNavItems];
+    case "STUDENT":
+      return [...commonNavItems, ...studentNavItems];
   }
 };

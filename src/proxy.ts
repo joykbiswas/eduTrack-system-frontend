@@ -169,7 +169,7 @@ export async function proxy (request : NextRequest) {
 
        //Rule-6 User trying to visit role based protected but doesn't have required role -> redirect to their default dashboard
 
-       if(routerOwner === "ADMIN" || routerOwner === "TEACHER" || routerOwner === "PATIENT"){
+       if(routerOwner === "ADMIN" || routerOwner === "TEACHER" || routerOwner === "STUDENT"){
             if(routerOwner !== userRole){
                 return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
             }
