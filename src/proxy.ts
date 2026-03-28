@@ -4,16 +4,13 @@ import { jwtUtils } from "./lib/jwtUtils";
 import { isTokenExpiringSoon } from "./lib/tokenUtils";
 import { getNewTokensWithRefreshToken, getUserInfo } from "./services/auth.services";
 
-async function refreshTokenMiddleware (refreshToken : string) : Promise<boolean> {
-    try {
-        const refresh = await getNewTokensWithRefreshToken(refreshToken);
-        if(!refresh){
-            return false;
-        }
-        return true;
-    } catch (error) {
-        console.error("Error refreshing token in middleware:", error);
-        return false;   
+async function refreshTokenMiddleware (refreshToken : string) : Promise<{ accessToken: string; refreshToken: string; token: string } | null> {
+        try {
+            const refreshed = await getNewTokensWithRefreshToken(refreshToken);
+            return refreshed;
+        } catch (error) {
+            console.error("Error refreshing token in middleware:", error);
+            return null;   
     }
 }
 
@@ -60,6 +57,27 @@ export async function proxy (request : NextRequest) {
 
                 if(refreshed){
                     requestHeaders.set("x-token-refreshed", "1");
+                    response.cookies.set("accessToken", refreshed.accessToken, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: "strict",
+                        path: "/",
+                        maxAge: 60 * 60 * 24,
+                    });
+                    response.cookies.set("refreshToken", refreshed.refreshToken, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: "strict",
+                        path: "/",
+                        maxAge: 60 * 60 * 24,
+                    });
+                    response.cookies.set("better-auth.session_token", refreshed.token, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: "strict",
+                        path: "/",
+                        maxAge: 60 * 60 * 24,
+                    });
                 }
 
                 return NextResponse.next(

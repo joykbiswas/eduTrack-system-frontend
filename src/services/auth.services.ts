@@ -1,6 +1,5 @@
 "use server";
 
-import { setTokenInCookies } from "@/lib/tokenUtils";
 import { cookies } from "next/headers";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -9,40 +8,51 @@ if(!BASE_API_URL){
     throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
 }
 
-export async function getNewTokensWithRefreshToken(refreshToken  : string) : Promise<boolean> {
+export interface IRefreshTokensResult {
+    accessToken: string;
+    refreshToken: string;
+    token: string;
+}
+
+export async function getNewTokensWithRefreshToken(refreshToken  : string) : Promise<IRefreshTokensResult | null> {
     try {
+        const cookieStore = await cookies();
+        const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+
+        if (!refreshToken || !sessionToken) {
+            console.warn("Missing refresh or session cookie before refresh request", { refreshToken, sessionToken });
+            return null;
+        }
+
+        const cookieHeader = `refreshToken=${refreshToken}; better-auth.session_token=${sessionToken}`;
+
         const res = await fetch(`${BASE_API_URL}/auth/refresh-token`, {
             method: "POST",
             headers:{
                 "Content-Type": "application/json",
-                Cookie : `refreshToken=${refreshToken}`
+                Cookie : cookieHeader,
             }
         });
 
         if(!res.ok){
-            return false;
+            return null;
         }
 
         const {data} = await res.json();
-
         const { accessToken, refreshToken: newRefreshToken, token } = data;
 
-        if(accessToken){
-            await setTokenInCookies("accessToken", accessToken);
+        if (!accessToken || !newRefreshToken || !token) {
+            return null;
         }
 
-        if(newRefreshToken){
-            await setTokenInCookies("refreshToken", newRefreshToken);
-        }
-
-        if(token){
-            await setTokenInCookies("better-auth.session_token", token, 24 * 60 * 60); // 1 day in seconds
-        }
-
-        return true;
+        return {
+            accessToken,
+            refreshToken: newRefreshToken,
+            token,
+        };
     } catch (error) {
         console.error("Error refreshing token:", error);
-        return false;
+        return null;
     }
 }
 

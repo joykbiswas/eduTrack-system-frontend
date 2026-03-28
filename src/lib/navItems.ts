@@ -43,24 +43,80 @@ export const teacherNavItems: NavSection[] = [
     items: [
       {
         title: "Word Story Cards",
-        href: "/teacher/dashboard/word-story-cards",
-        icon: "BookOpen",
+        items: [
+          {
+            title: "Card Create",
+            href: "/teacher/dashboard/word-story-cards-create",
+            icon: "BookOpen",
+          },
+          {
+            title: "Card List",
+            href: "/teacher/dashboard/word-story-cards-list",
+            icon: "BookOpen",
+          },
+        ],
       },
       {
         title: "Assessments",
-        href: "/teacher/dashboard/assessments",
-        icon: "ClipboardList",
+        items: [
+          {
+            title: "Assessment Create",
+            href: "/teacher/dashboard/assessment-create",
+            icon: "ClipboardList",
+          },
+          {
+            title: "Assessment List",
+            href: "/teacher/dashboard/assessment-list",
+            icon: "ClipboardList",
+          },
+        ],
       },
       {
         title: "Classes",
-        href: "/teacher/dashboard/classes",
-        icon: "Calender",
+        items: [
+          {
+            title: "Class Create",
+            href: "/teacher/dashboard/classes-create",
+            icon: "Calender",
+          },
+          {
+            title: "Class List",
+            href: "/teacher/dashboard/classes-list",
+            icon: "Calender",
+          },
+        ],
       },
       {
-        title: "My Timetable",
-        href: "/teacher/dashboard/my-timetable",
-        icon: "Clock",
+        title: "Quizzes",
+        items: [
+          {
+            title: "Quiz Create",
+            href: "/teacher/dashboard/quiz-create",
+            icon: "Calender",
+          },
+          {
+            title: "Quiz List",
+            href: "/teacher/dashboard/quiz-list",
+            icon: "Calender",
+          },
+        ],
       },
+      {
+        title: "Material",
+        items: [
+          {
+            title: "material Create",
+            href: "/teacher/dashboard/material-create",
+            icon: "Calender",
+          },
+          {
+            title: "material List",
+            href: "/teacher/dashboard/material-list",
+            icon: "Calender",
+          },
+        ],
+      },
+     
     ],
   },
 ];
@@ -159,13 +215,23 @@ export const studentNavItems: NavSection[] = [
       },
       {
         title: "My Classes",
-        href: "/dashboard/my-classes",
-        icon: "Calender",
+        items: [
+          {
+            title: "Classes List",
+            href: "/dashboard/class-list",
+            icon: "Calender",
+          },
+        ],
       },
       {
         title: "Tasks",
-        href: "/dashboard/tasks",
-        icon: "ClipboardList",
+        items: [
+          {
+            title: "Tasks List",
+            href: "/dashboard/tasks",
+            icon: "ClipboardList",
+          },
+        ],
       },
     ],
   },

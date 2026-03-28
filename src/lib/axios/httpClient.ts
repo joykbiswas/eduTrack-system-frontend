@@ -14,22 +14,23 @@ if(!API_BASE_URL) {
 async function tryRefreshToken(
     accessToken: string,
     refreshToken: string
-): Promise<void>
+): Promise<{ accessToken: string; refreshToken: string; token: string } | null>
 {
     if(!isTokenExpiringSoon(accessToken)) {
-        return;
+        return null;
     }
 
     const requestHeader = await headers();
 
     if (requestHeader.get("x-token-refreshed") === "1") {
-        return; // avoid multiple refresh attempts in the same request lifecycle
+        return null; // avoid multiple refresh attempts in the same request lifecycle
     }
 
     try {
-        await getNewTokensWithRefreshToken(refreshToken);
+        return await getNewTokensWithRefreshToken(refreshToken);
     } catch (error : any) {
         console.error("Error refreshing token in http client:", error);
+        return null;
     }
 }
 
