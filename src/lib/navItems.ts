@@ -29,7 +29,7 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
       items: [
         {
           title: "Change Password",
-          href: "change-password",
+          href: "/change-password",
           icon: "Settings",
         },
       ],
@@ -70,34 +70,79 @@ export const adminNavItems: NavSection[] = [
     title: "User Management",
     items: [
       {
-        title: "Admins",
-        href: "/admin/dashboard/admins-management",
-        icon: "Shield",
+        title: "Admins Management",
+        items: [
+          {
+            title: "Admin Create",
+            href: "/admin/dashboard/admin-create",
+            icon: "Shield",
+          },
+          {
+            title: "Admins List",
+            href: "/admin/dashboard/admin-list",
+            icon: "Shield",
+          },
+        ],
       },
       {
-        title: "Teachers",
-        href: "/admin/dashboard/teachers-management",
-        icon: "UserCog",
+        title: "Teachers Management",
+        items: [
+          {
+            title: "Teacher Create",
+            href: "/admin/dashboard/teacher-create",
+            icon: "UserCog",
+          },
+          {
+            title: "Teachers List",
+            href: "/admin/dashboard/teacher-list",
+            icon: "UserCog",
+          },
+        ],
       },
       {
-        title: "Students",
-        href: "/admin/dashboard/students-management",
-        icon: "Users",
+        title: "Students Management",
+        items: [
+          {
+            title: "Student Create",
+            href: "/admin/dashboard/student-create",
+            icon: "Users",
+          },
+          {
+            title: "Students List",
+            href: "/admin/dashboard/student-list",
+            icon: "Users",
+          },
+        ],
       },
-    ],
-  },
-  {
-    title: "Org Management",
-    items: [
       {
-        title: "Organizations",
-        href: "/admin/dashboard/organizations-management",
-        icon: "Building2",
+        title: "Org Management",
+        items: [
+          {
+            title: "Organization Create",
+            href: "/admin/dashboard/organization-create",
+            icon: "Building2",
+          },
+          {
+            title: "Organization List",
+            href: "/admin/dashboard/organization-list",
+            icon: "Building2",
+          },
+        ],
       },
       {
-        title: "Classes",
-        href: "/admin/dashboard/classes-management",
-        icon: "Home",
+        title: "Class Management",
+        items: [
+          {
+            title: "Class Create",
+            href: "/admin/dashboard/class-create",
+            icon: "Building2",
+          },
+          {
+            title: "Classes List",
+            href: "/admin/dashboard/class-list",
+            icon: "Home",
+          },
+        ],
       },
     ],
   },

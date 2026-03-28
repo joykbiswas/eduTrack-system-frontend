@@ -1,12 +1,24 @@
+// export interface NavItem {
+//     title : string,
+//     href : string,
+//     icon : string
+// }
+
+// export interface NavSection {
+//     title ?: string,
+//     items : NavItem[]
+// }
+
 export interface NavItem {
-    title : string,
-    href : string,
-    icon : string
+    title: string;
+    href?: string; // Optional - parent items won't have this
+    icon?: string; // Optional - parent items might not have icons
+    items?: NavItem[]; // Optional - leaf items won't have this
 }
 
 export interface NavSection {
-    title ?: string,
-    items : NavItem[]
+    title?: string;
+    items: NavItem[];
 }
 
 export interface DashboardStats {

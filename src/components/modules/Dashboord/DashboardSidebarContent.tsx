@@ -4,11 +4,45 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { getIconComponent } from "@/lib/iconMapper"
 import { cn } from "@/lib/utils"
-import { NavSection } from "@/types/dashboard.types"
+import { NavItem, NavSection } from "@/types/dashboard.types"
 import { UserInfo } from "@/types/user.types"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+const renderNavItem = (item: NavItem, key: string, pathname: string) => {
+  if (item.items && item.items.length > 0) {
+    return (
+      <div key={key}>
+        <div className="px-3 py-2 text-sm font-semibold text-muted-foreground">
+          {item.title}
+        </div>
+        <div className="space-y-1 pl-4">
+          {item.items.map((child, index) => renderNavItem(child, `${key}-${index}`, pathname))}
+        </div>
+      </div>
+    );
+  }
+
+  const Icon = item.icon ? getIconComponent(item.icon) : null;
+  const href = item.href ?? "#";
+  const isActive = pathname === item.href;
+
+  return (
+    <Link
+      href={href}
+      key={key}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+        isActive
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      )}
+    >
+      {Icon && <Icon className="w-4 h-4" />}
+      <span>{item.title}</span>
+    </Link>
+  );
+};
 
 interface DashboardSidebarContentProps {
     userInfo : UserInfo,
@@ -42,27 +76,7 @@ const DashboardSidebarContent = ({dashboardHome, navItems, userInfo} : Dashboard
               )}
 
               <div className="space-y-1">
-                {section.items.map((item, id) => {
-                  const isActive = pathname === item.href;
-                  // Icon Mapper Function
-                  const Icon = getIconComponent(item.icon);
-
-                  return (
-                    <Link
-                      href={item.href}
-                      key={id}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                      )}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  );
-                })}
+                {section.items.map((item, id) => renderNavItem(item, `nav-item-${sectionId}-${id}`, pathname))}
               </div>
 
               {sectionId < navItems.length - 1 && (

@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { SheetTitle } from "@/components/ui/sheet";
 import { getIconComponent } from "@/lib/iconMapper";
 import { cn } from "@/lib/utils";
-import { NavSection } from "@/types/dashboard.types";
+import { NavItem, NavSection } from "@/types/dashboard.types";
 import { UserInfo } from "@/types/user.types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,40 @@ interface DashboardMobileSidebarProps{
     dashboardHome : string;
 }
 
+const renderMobileNavItem = (item: NavItem, key: string, pathname: string) => {
+  if (item.items && item.items.length > 0) {
+    return (
+      <div key={key}>
+        <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase">
+          {item.title}
+        </div>
+        <div className="space-y-1 pl-4">
+          {item.items.map((child, index) => renderMobileNavItem(child, `${key}-${index}`, pathname))}
+        </div>
+      </div>
+    );
+  }
+
+  const Icon = item.icon ? getIconComponent(item.icon) : null;
+  const href = item.href ?? "#";
+  const isActive = pathname === item.href;
+
+  return (
+    <Link
+      href={href}
+      key={key}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+        isActive
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      )}
+    >
+      {Icon && <Icon className="h-4 w-4" />}
+      <span className="flex-1">{item.title}</span>
+    </Link>
+  );
+};
 
 const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardMobileSidebarProps ) => {
     const pathname = usePathname()
@@ -42,26 +76,7 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
               )}
 
               <div className="space-y-1">
-                {section.items.map((item, id) => {
-                  const isActive = pathname === item.href;
-                  const Icon = getIconComponent(item.icon);
-
-                  return (
-                    <Link
-                      href={item.href}
-                      key={id}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span className="flex-1">{item.title}</span>
-                    </Link>
-                  );
-                })}
+                {section.items.map((item, id) => renderMobileNavItem(item, `nav-item-${sectionId}-${id}`, pathname))}
               </div>
 
               {sectionId < navItems.length - 1 && (
