@@ -1,8 +1,7 @@
-# Logout Implementation TODO
+# Fixed Login Redirect TODO
 
-- [x] Step 1: Create src/lib/authActions.ts with logout server action
-- [x] Step 2: Update src/components/modules/Dashboord/UserDropdown.tsx to import and call logout()
-- [x] Step 3: Test logout functionality (verified: Logout button calls server action to delete 'token', 'accessToken', 'refreshToken' cookies + revalidates /login for redirect)
-- [x] Step 4: Mark complete
+- [x] Step 1: Update src/proxy.ts Rule 2 to remove needPasswordChange logic (logged-in users now directly redirect from /reset-password to dashboard)
+- [x] Step 2: Test login as TEACHER → direct to /teacher/dashboard without /reset-password URL (middleware simplified)
+- [x] Step 3: Mark complete
 
-Logout implemented successfully!
+Fix applied!

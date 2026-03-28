@@ -24,35 +24,19 @@ export const loginAction = async (payload : ILoginPayload, redirectPath ?: strin
         const response = await httpClient.post<ILoginResponse>("/auth/login", parsedPayload.data);
 
         const { accessToken, refreshToken, token, user} = response.data;
-        const {role, needPasswordChange, email} = user;
+        const {role} = user;
         await setTokenInCookies("accessToken", accessToken);
         await setTokenInCookies("refreshToken", refreshToken);
         await setTokenInCookies("better-auth.session_token", token, 24 * 60 * 60); // 1 day in seconds
 
-        // if(!emailVerified){
-        //     redirect("/verify-email");
-        // }else // in the catch block
-            
-        if(needPasswordChange){
-            //TODO : refactoring
-            redirect(`/reset-password?email=${email}`);
-        }else{
-            // redirect(redirectPath || "/dashboard");
-            const targetPath = redirectPath && isValidRedirectForRole(redirectPath, role as UserRole) ? redirectPath : getDefaultDashboardRoute(role as UserRole);
-
-            
-            redirect(targetPath);
-        }
-        
+        const targetPath = redirectPath && isValidRedirectForRole(redirectPath, role as UserRole) ? redirectPath : getDefaultDashboardRoute(role as UserRole);
+        redirect(targetPath);
     } catch (error : any) {
-        if(error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")){
+        if (error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")) {
             throw error;
         }
 
         console.log(error, "error");
-        if (error && error.response && error.response.data.message === "Email not verified") {
-            redirect(`/verify-email?email=${payload.email}`);
-        }
         return {
             success: false,
             message: `Login failed: ${error.message}`,

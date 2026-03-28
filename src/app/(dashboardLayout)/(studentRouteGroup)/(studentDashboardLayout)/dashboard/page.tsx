@@ -1,8 +1,8 @@
 
-const StudentDashboardPage = () => {
+const StudentDashboard = () => {
   return (
     <div>StudentDashboardPage</div>
   )
 }
 
-export default StudentDashboardPage
+export default StudentDashboard

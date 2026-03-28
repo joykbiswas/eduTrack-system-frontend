@@ -1,6 +1,6 @@
 export type UserRole = "SUPER_ADMIN" | "ADMIN" | "TEACHER" | "STUDENT";
 
-export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password", "/verify-email" ];
+export const authRoutes = [ "/login", "/register", "/forgot-password" ];
 
 export const isAuthRoute = (pathname : string) => {
     return authRoutes.some((router : string) => router === pathname);
@@ -32,7 +32,7 @@ export const adminProtectedRoutes : RouteConfig = {
 // }
 
 export const studentProtectedRoutes : RouteConfig = {
-    pattern: [/^\/student\/dashboard/ ], // Matches any path that starts with /student/dashboard
+    pattern: [/^\/dashboard/ ], // Matches any path that starts with /dashboard
     exact : [ "/payment/success"]
 };
 
@@ -75,7 +75,7 @@ export const getDefaultDashboardRoute = (role : UserRole) => {
         return "/teacher/dashboard";
     }
     if(role === "STUDENT") {
-        return "/student/dashboard";
+        return "/dashboard";
     }
 
     return "/";

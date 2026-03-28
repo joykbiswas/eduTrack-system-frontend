@@ -13,7 +13,11 @@ export async function logout() {
     
     // Redirect to login
     redirect("/login");
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
+
     console.error("Logout error:", error);
     redirect("/login");
   }
