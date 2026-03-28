@@ -126,41 +126,41 @@ export async function proxy (request : NextRequest) {
 
        //Rule - Enforcing user to stay in reset password or verify email page if their needPasswordChange or isEmailVerified flags are not satisfied respectively
 
-       if(accessToken){
-            const userInfo = await getUserInfo();
+    //    if(accessToken){
+    //         const userInfo = await getUserInfo();
 
-            if(userInfo){
-                // need email verification scenario
-                if(userInfo.emailVerified === false){
-                    if(pathname !== "/verify-email"){
-                        const verifyEmailUrl = new URL("/verify-email", request.url);
-                        verifyEmailUrl.searchParams.set("email", userInfo.email);
-                        return NextResponse.redirect(verifyEmailUrl);
-                    }
+    //         // if(userInfo){
+    //         //     // need email verification scenario
+    //         //     if(userInfo.emailVerified === false){
+    //         //         if(pathname !== "/verify-email"){
+    //         //             const verifyEmailUrl = new URL("/verify-email", request.url);
+    //         //             verifyEmailUrl.searchParams.set("email", userInfo.email);
+    //         //             return NextResponse.redirect(verifyEmailUrl);
+    //         //         }
 
-                    return NextResponse.next();
-                }
+    //         //         return NextResponse.next();
+    //         //     }
 
-                if(userInfo.emailVerified && pathname === "/verify-email"){
-                    return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
-                }
+    //         //     if(userInfo.emailVerified && pathname === "/verify-email"){
+    //         //         return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
+    //         //     }
 
-                // need password change scenario
-                if (userInfo.needPasswordChange){
-                    if(pathname !== "/reset-password"){
-                        const resetPasswordUrl = new URL("/reset-password", request.url);
-                        resetPasswordUrl.searchParams.set("email", userInfo.email);
-                        return NextResponse.redirect(resetPasswordUrl);
-                    }
+    //         //     // need password change scenario
+    //         //     if (userInfo.needPasswordChange){
+    //         //         if(pathname !== "/reset-password"){
+    //         //             const resetPasswordUrl = new URL("/reset-password", request.url);
+    //         //             resetPasswordUrl.searchParams.set("email", userInfo.email);
+    //         //             return NextResponse.redirect(resetPasswordUrl);
+    //         //         }
 
-                    return NextResponse.next();
-                }
+    //         //         return NextResponse.next();
+    //         //     }
 
-                if(!userInfo.needPasswordChange && pathname === "/reset-password"){
-                    return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
-                }
-            }
-       }
+    //         //     if(!userInfo.needPasswordChange && pathname === "/reset-password"){
+    //         //         return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole as UserRole), request.url));
+    //         //     }
+    //         // }
+    //    }
 
        // Rule - 5 User trying to access Common protected route -> allow
        if(routerOwner === "COMMON"){
