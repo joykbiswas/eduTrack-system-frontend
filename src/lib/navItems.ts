@@ -1,11 +1,11 @@
 import { NavSection } from "@/types/dashboard.types";
 import { getDefaultDashboardRoute, UserRole } from "./authUtils";
 
+// Existing code + EduTrack updates
 export const getCommonNavItems = (role: UserRole): NavSection[] => {
   const defaultDashboard = getDefaultDashboardRoute(role);
   return [
     {
-      // title : "Dashboard",
       items: [
         {
           title: "Home",
@@ -39,8 +39,18 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
 
 export const teacherNavItems: NavSection[] = [
   {
-    title: " Student Management",
+    title: "Content Management",
     items: [
+      {
+        title: "Word Story Cards",
+        href: "/teacher/dashboard/word-story-cards",
+        icon: "BookOpen",
+      },
+      {
+        title: "Assessments",
+        href: "/teacher/dashboard/assessments",
+        icon: "ClipboardList",
+      },
       {
         title: "Classes",
         href: "/teacher/dashboard/classes",
@@ -51,16 +61,6 @@ export const teacherNavItems: NavSection[] = [
         href: "/teacher/dashboard/my-timetable",
         icon: "Clock",
       },
-      // {
-      //   title: "Grades",
-      //   href: "/teacher/dashboard/grades",
-      //   icon: "FileText",
-      // },
-      // {
-      //   title: "My Feedback",
-      //   href: "/teacher/dashboard/my-feedback",
-      //   icon: "Star",
-      // },
     ],
   },
 ];
@@ -74,60 +74,30 @@ export const adminNavItems: NavSection[] = [
         href: "/admin/dashboard/admins-management",
         icon: "Shield",
       },
-      // {
-      //   title: "Teachers",
-      //   href: "/admin/dashboard/teachers-management",
-      //   icon: "Stethoscope",
-      // },
-      // {
-      //   title: "Students",
-      //   href: "/admin/dashboard/students-management",
-      //   icon: "Users",
-      // },
+      {
+        title: "Teachers",
+        href: "/admin/dashboard/teachers-management",
+        icon: "UserCog",
+      },
+      {
+        title: "Students",
+        href: "/admin/dashboard/students-management",
+        icon: "Users",
+      },
     ],
   },
   {
-    title: "Hospital Management",
+    title: "Org Management",
     items: [
       {
-        title: "Appointments",
-        href: "/admin/dashboard/appointments-management",
-        icon: "Calendar",
+        title: "Organizations",
+        href: "/admin/dashboard/organizations-management",
+        icon: "Building2",
       },
       {
-        title: "Schedules",
-        href: "/admin/dashboard/schedules-management",
-        icon: "Clock",
-      },
-      // {
-      //   title: "Subjects",
-      //   href: "/admin/dashboard/subjects-management",
-      //   icon: "Hospital",
-      // },
-      // {
-      //   title: "Teacher Timetable",
-      //   href: "/admin/dashboard/teacher-timetable-management",
-      //   icon: "CalendarClock",
-      // },
-      // {
-      //   title: "Teacher Subjects",
-      //   href: "/admin/dashboard/teacher-subjects-management",
-      //   icon: "Stethoscope",
-      // },
-      {
-        title: "Payments",
-        href: "/admin/dashboard/payments-management",
-        icon: "CreditCard",
-      },
-      {
-        title: "Prescriptions",
-        href: "/admin/dashboard/prescriptions-management",
-        icon: "FileText",
-      },
-      {
-        title: "Reviews",
-        href: "/admin/dashboard/reviews-management",
-        icon: "Star",
+        title: "Classes",
+        href: "/admin/dashboard/classes-management",
+        icon: "Home",
       },
     ],
   },
@@ -135,32 +105,22 @@ export const adminNavItems: NavSection[] = [
 
 export const studentNavItems: NavSection[] = [
   {
-    title: "Enrollments",
+    title: "My Learning",
     items: [
       {
-        title: "My Enrollments",
-        href: "/dashboard/my-enrollments",
-        icon: "Calendar",
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: "LayoutDashboard",
       },
       {
-        title: "Enroll Class",
-        href: "/dashboard/enroll-class",
+        title: "My Classes",
+        href: "/dashboard/my-classes",
+        icon: "Calender",
+      },
+      {
+        title: "Tasks",
+        href: "/dashboard/tasks",
         icon: "ClipboardList",
-      },
-    ],
-  },
-  {
-    title: "Academic Records",
-    items: [
-      {
-        title: "My Grades",
-        href: "/dashboard/my-grades",
-        icon: "FileText",
-      },
-      {
-        title: "Academic Records",
-        href: "/dashboard/academic-records",
-        icon: "Activity",
       },
     ],
   },
@@ -179,5 +139,8 @@ export const getNavItemsByRole = (role: UserRole): NavSection[] => {
 
     case "STUDENT":
       return [...commonNavItems, ...studentNavItems];
+
+    default:
+      return commonNavItems;
   }
 };
