@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
@@ -115,13 +116,45 @@ export const deleteAdmin = async (id: string) => {
 };
 
 // ... rest unchanged (teacher/student/org/class use httpClient)
+// export const createTeacher = async (payload: ICreateTeacherPayload) => {
+//   try {
+//     const teacher = await httpClient.post('/teacher/create-teacher', payload);
+//     return teacher;
+//   } catch (error) {
+//     console.log("Error creating teacher:", error);
+//     throw error;
+//   }
+// };
+
+// services/admin.services.ts
+// services/admin.services.ts
 export const createTeacher = async (payload: ICreateTeacherPayload) => {
+  console.log("Sending payload to API:", payload);
+
   try {
-    const teacher = await httpClient.post('/teacher/create-teacher', payload);
-    return teacher;
-  } catch (error) {
-    console.log("Error creating teacher:", error);
-    throw error;
+    const response = await httpClient.post('/teacher/create-teacher', payload);
+    console.log("API raw response:", response);
+    
+    // Return the data directly from response
+    return response;
+  } catch (error: any) {
+    console.error("Error creating teacher:", error);
+    
+    // Handle different error formats
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    
+    if (error.response?.data?.body?.message) {
+      throw new Error(error.response.data.body.message);
+    }
+    
+    // Handle network errors
+    if (error.message === 'Network Error') {
+      throw new Error('Network error. Please check your connection.');
+    }
+    
+    throw new Error(error.message || 'Failed to create teacher');
   }
 };
 

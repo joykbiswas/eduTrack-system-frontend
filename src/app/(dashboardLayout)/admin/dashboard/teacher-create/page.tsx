@@ -1,8 +1,11 @@
+import { TeacherCreateForm } from "@/components/admin/teacher-create-form";
 
 const TeacherCreatePage = () => {
   return (
-    <div>TeacherCreatePage</div>
-  )
-}
+    <main className="min-h-screen bg-background">
+      <TeacherCreateForm />
+    </main>
+  );
+};
 
-export default TeacherCreatePage
+export default TeacherCreatePage;

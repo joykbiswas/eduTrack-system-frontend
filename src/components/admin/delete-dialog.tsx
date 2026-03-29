@@ -1,17 +1,21 @@
+// app/admin/dashboard/teacher-list/components/delete-dialog.tsx
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { X } from 'lucide-react'
 
 interface DeleteDialogProps {
   id: string
@@ -20,61 +24,50 @@ interface DeleteDialogProps {
   deleteFn: (id: string) => Promise<void>
 }
 
-export function DeleteDialog({
-  id,
-  name,
-  onDelete,
-  deleteFn
-}: DeleteDialogProps) {
-  const [open, setOpen] = useState(false)
+export function DeleteDialog({ id, name, onDelete, deleteFn }: DeleteDialogProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
       await deleteFn(id)
-      toast.success(`${name} deleted successfully`)
       onDelete()
+      setIsOpen(false)
+      toast.success(`${name} has been deleted successfully`)
     } catch (error) {
-      toast.error('Failed to delete')
+      toast.error(`Failed to delete ${name}`)
     } finally {
       setIsDeleting(false)
-      setOpen(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <Button 
-        variant="destructive" 
-        size="sm" 
-        className="h-8 w-8 p-0"
-        onClick={() => setOpen(true)}
-      >
-        <span className="sr-only">Delete</span>
-        <X className="h-4 w-4" />
-      </Button>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Delete {name}?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete {name} and remove the data from our servers.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button 
-            type="button" 
-            variant="destructive" 
-            onClick={handleDelete} 
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive">
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the teacher
+            <span className="font-semibold text-foreground"> `{name}`</span> and remove all associated data.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
             disabled={isDeleting}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

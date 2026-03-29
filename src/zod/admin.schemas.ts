@@ -14,21 +14,25 @@ export const adminCreateSchema = z.object({
 export const adminUpdateSchema = adminCreateSchema.partial().omit({ password: true });
 
 export const teacherCreateSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string()
+    .min(5, 'Password must be at least 5 characters long')
+    .max(50, 'Password is too long'),
   teacher: z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email'),
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email format'),
     contactNumber: z.string().optional(),
     address: z.string().optional(),
-    registrationNumber: z.string().min(3, 'Registration number must be at least 3 characters'),
-    experience: z.number().min(0),
+    registrationNumber: z.string()
+      .min(1, 'Registration number is required')
+      .regex(/^[A-Za-z0-9-]+$/, 'Registration number can only contain letters, numbers, and hyphens'),
+    experience: z.number().min(0, 'Experience cannot be negative').max(50, 'Experience seems too high'),
     gender: z.enum(['MALE', 'FEMALE']),
-    qualification: z.string().min(2),
-    currentWorkingPlace: z.string().min(2),
-    designation: z.string().min(2),
-    subject: z.string().min(2),
+    qualification: z.string().min(1, 'Qualification is required'),
+    currentWorkingPlace: z.string().min(1, 'Current workplace is required'),
+    designation: z.string().min(1, 'Designation is required'),
+    subject: z.string().min(1, 'Subject is required'),
   }),
-});
+})
 
 export const teacherUpdateSchema = teacherCreateSchema.partial().omit({ password: true });
 

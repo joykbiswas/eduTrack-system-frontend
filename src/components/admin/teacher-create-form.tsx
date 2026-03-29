@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useForm } from 'react-hook-form'
@@ -22,11 +23,13 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { z } from 'zod'
+import { useState } from 'react'
 
 type FormValues = z.infer<typeof teacherCreateSchema>
 
 export function TeacherCreateForm() {
   const router = useRouter()
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(teacherCreateSchema),
@@ -49,18 +52,66 @@ export function TeacherCreateForm() {
   })
 
   const onSubmit = async (values: FormValues) => {
+    console.log("Submitting teacher form with values:", values);
+    setServerError(null); // Clear previous server errors
+    
     try {
-      await createTeacher(values)
-      toast.success('Teacher created successfully')
-      router.push('/admin/dashboard/teacher-list')
-      router.refresh()
-    } catch (error) {
-      toast.error('Failed to create teacher')
+      const response = await createTeacher(values);
+      console.log("Teacher created successfully. API response:", response);
+      
+      if(!response || response.success !== true) {
+        throw new Error(response?.message || 'Failed to create teacher');
+      }
+      if (response.success === true) {
+      toast.success(response.message || 'Teacher created successfully');
+      router.push('/admin/dashboard/teacher-list');
+      // Use window.location for guaranteed redirect
+      // window.location.href = '/admin/dashboard/teacher-list';
+    } else {
+      throw new Error(response.message || 'Failed to create teacher');
     }
-  }
-
+      router.refresh();
+    } catch (error: any) {
+      console.error("Error in onSubmit:", error);
+      
+      // Extract error message
+      const errorMessage = error.message || 'Failed to create teacher';
+      
+      // Set server error for display
+      setServerError(errorMessage);
+      
+      // Show specific error messages based on content
+      if (errorMessage.includes('registrationNumber') || errorMessage.includes('already exists')) {
+        toast.error('Registration number already exists. Please use a unique registration number.');
+        // Set field-specific error
+        form.setError('teacher.registrationNumber', {
+          type: 'manual',
+          message: 'This registration number is already taken. Please use a different one.'
+        });
+      } 
+      else if (errorMessage.includes('Password') || errorMessage.includes('password')) {
+        toast.error('Password is too short. Please use at least 8 characters.');
+        // Set field-specific error
+        form.setError('password', {
+          type: 'manual',
+          message: 'Password must be at least 8 characters long'
+        });
+      }
+      else if (errorMessage.includes('email')) {
+        toast.error('Email already exists. Please use a different email address.');
+        form.setError('teacher.email', {
+          type: 'manual',
+          message: 'This email is already registered. Please use a different one.'
+        });
+      }
+      else {
+        toast.error(errorMessage);
+      }
+    }
+  };
+  
   return (
-    <div className="container mx-auto py-10 max-w-2xl">
+    <div className="container mx-auto max-w-2xl">
       <Button variant="ghost" onClick={() => router.back()} className="mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to list
@@ -71,6 +122,14 @@ export function TeacherCreateForm() {
           <CardDescription>Add a new teacher to the system.</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Display server error message */}
+          {serverError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
+              <p className="font-semibold">Error:</p>
+              <p>{serverError}</p>
+            </div>
+          )}
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -78,7 +137,7 @@ export function TeacherCreateForm() {
                 name="teacher.name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Name *</FormLabel>
                     <FormControl>
                       <Input placeholder="John Doe" {...field} />
                     </FormControl>
@@ -86,12 +145,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email *</FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="teacher@example.com" {...field} />
                     </FormControl>
@@ -99,6 +159,7 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.contactNumber"
@@ -112,6 +173,7 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.address"
@@ -125,19 +187,22 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.registrationNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Registration Number</FormLabel>
+                    <FormLabel>Registration Number *</FormLabel>
                     <FormControl>
                       <Input placeholder="TCH-001" {...field} />
                     </FormControl>
+                    <FormDescription>Must be unique. This number will be used to identify the teacher.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.experience"
@@ -159,12 +224,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Gender</FormLabel>
+                    <FormLabel>Gender *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -180,12 +246,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.qualification"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Qualification</FormLabel>
+                    <FormLabel>Qualification *</FormLabel>
                     <FormControl>
                       <Input placeholder="MSc Mathematics" {...field} />
                     </FormControl>
@@ -193,12 +260,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.currentWorkingPlace"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Workplace</FormLabel>
+                    <FormLabel>Current Workplace *</FormLabel>
                     <FormControl>
                       <Input placeholder="Dhaka College" {...field} />
                     </FormControl>
@@ -206,12 +274,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.designation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Designation</FormLabel>
+                    <FormLabel>Designation *</FormLabel>
                     <FormControl>
                       <Input placeholder="Assistant Professor" {...field} />
                     </FormControl>
@@ -219,12 +288,13 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="teacher.subject"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Subject</FormLabel>
+                    <FormLabel>Subject *</FormLabel>
                     <FormControl>
                       <Input placeholder="Mathematics" {...field} />
                     </FormControl>
@@ -232,20 +302,22 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
+              
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Password *</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Enter password" {...field} />
+                      <Input type="password" placeholder="Enter password (min. 8 characters)" {...field} />
                     </FormControl>
-                    <FormDescription>Password for the new teacher account.</FormDescription>
+                    <FormDescription>Password must be at least 8 characters long.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              
               <div className="flex gap-4">
                 <Button type="button" variant="outline" onClick={() => router.back()}>
                   Cancel
@@ -261,4 +333,3 @@ export function TeacherCreateForm() {
     </div>
   )
 }
-
