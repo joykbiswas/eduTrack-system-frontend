@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { ColumnDef } from '@tanstack/react-table'
-// DataTable component not found, create or use Table primitive. For now comment
 import { DataTable } from '@/components/shared/data-table'
-import { AdminCreateForm } from './admin-create-form'
 import { DeleteDialog } from './delete-dialog'
 import { getAllAdmins, deleteAdmin } from '@/services/admin.services'
 import { Button } from '@/components/ui/button'

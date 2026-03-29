@@ -36,7 +36,6 @@ export function AdminCreateForm() {
         email: '',
         role: 'ADMIN' as const,
         contactNumber: '',
-        profilePhoto: '',
       },
     },
   })
@@ -139,20 +138,7 @@ export function AdminCreateForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="admin.profilePhoto"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile Photo URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/photo.jpg" {...field} />
-                    </FormControl>
-                    <FormDescription>Optional profile photo URL.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/*  */}
               <div className="flex gap-4">
                 <Button type="button" variant="outline" onClick={() => router.back()}>
                   Cancel

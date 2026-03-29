@@ -1,9 +1,9 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
-import { IAdmin } from "@/types/admin.types";
+import {  IAdmin } from "@/types/admin.types";
 import { ITeachersResponse, ITeacher, ICreateTeacherPayload, IUpdateTeacherPayload } from "@/types/teacher.types";
-import { IStudentsResponse, IStudent } from "@/types/student.types";
+import { IStudentsResponse } from "@/types/student.types";
 import { IOrganization } from "@/types/organization.types";
 import { IClass } from "@/types/class.types";
 
@@ -68,7 +68,7 @@ export const getAllClasses = async () => {
 };
 
 // Admin CRUD (Client-side)
-export const createAdmin = async (payload: { password: string; admin: { name: string; email: string; role: 'ADMIN' | 'SUPER_ADMIN'; contactNumber?: string; profilePhoto?: string } }) => {
+export const createAdmin = async (payload: { password: string; admin: { name: string; email: string; role: 'ADMIN' | 'SUPER_ADMIN'; contactNumber?: string; } }) => {
   try {
     const admin = await httpClient.post('/admin', payload);
     return admin;
@@ -88,23 +88,19 @@ export const getAdminById = async (id: string) => {
   }
 };
 
-export const updateAdmin = async (id: string, payload: { admin?: Partial<{ name: string; email: string; role: 'ADMIN' | 'SUPER_ADMIN'; contactNumber?: string; profilePhoto?: string }> }) => {
+export const updateAdmin = async (id: string, payload: {
+  name: string;
+  role: 'ADMIN' | 'SUPER_ADMIN';
+  contactNumber?: string;
+}) => {
   try {
-    console.log('=== UPDATE ADMIN API CALL ===');
-    console.log('Admin ID:', id);
-    console.log('Request Payload:', JSON.stringify(payload, null, 2));
-    console.log('Payload structure:', payload);
-    console.log('Admin data:', payload.admin);
+    const response = await httpClient.put(`/admin/${id}`, payload);
     
-    const admin = await httpClient.put(`/admin/${id}`, payload);
-    
-    console.log('Response from server:', admin);
-    console.log('=== UPDATE ADMIN API CALL COMPLETED ===');
-    console.log("Response: ==", admin);
-    return admin;
+    console.log('Response from server:', response);
+ 
+    return response.data; // Return the data part directly
   } catch (error) {
     console.log("Error updating admin:", error);
-    console.error('Full error details:', error);
     throw error;
   }
 };
