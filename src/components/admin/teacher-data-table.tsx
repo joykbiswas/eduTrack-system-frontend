@@ -1,68 +1,80 @@
 // app/admin/dashboard/teacher-list/components/teacher-data-table.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import { ColumnDef } from '@tanstack/react-table'
-import { DataTable } from '@/components/shared/data-table'
-import { DeleteDialog } from './delete-dialog'
-import { getAllTeachers, deleteTeacher } from '@/services/admin.services'
-import { Button } from '@/components/ui/button'
-import { Plus, Eye, Pencil, ArrowUpDown, BadgeCheck, XCircle } from 'lucide-react'
-import { toast } from 'sonner'
-import type { ITeacher } from '@/types/teacher.types'
-import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/shared/data-table";
+import { DeleteDialog } from "./delete-dialog";
+import { getAllTeachers, deleteTeacher } from "@/services/admin.services";
+import { Button } from "@/components/ui/button";
+import {
+  Plus,
+  Eye,
+  Pencil,
+  ArrowUpDown,
+  BadgeCheck,
+  XCircle,
+} from "lucide-react";
+import { toast } from "sonner";
+import type { ITeacher } from "@/types/teacher.types";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface TeacherDataTableProps {
-  teachers: ITeacher[]
+  teachers: ITeacher[];
 }
 
 export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
-  const pathname = usePathname()
-  const [data, setData] = useState(teachers)
-  const [isLoading, setIsLoading] = useState(false)
+  const pathname = usePathname();
+  const [data, setData] = useState(teachers);
+  const [isLoading, setIsLoading] = useState(false);
 
   const refreshData = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await getAllTeachers()
+      const response = await getAllTeachers();
       // Handle the response structure based on your API
-      const teachersData = response.data?.data?.teachers || response.data?.teachers || response.teachers || []
-      setData(teachersData)
+      const teachersData = response.data?.teachers || [];
+      setData(teachersData);
     } catch (error) {
-      toast.error('Failed to load teachers')
+      toast.error("Failed to load teachers");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteTeacher(id)
-      toast.success('Teacher deleted successfully')
-      await refreshData()
+      await deleteTeacher(id);
+      toast.success("Teacher deleted successfully");
+      await refreshData();
     } catch (error) {
-      toast.error('Failed to delete teacher')
-      throw error
+      toast.error("Failed to delete teacher");
+      throw error;
     }
-  }
+  };
 
   useEffect(() => {
-    refreshData()
-  }, [pathname])
+    refreshData();
+  }, [pathname]);
 
   const columns: ColumnDef<ITeacher>[] = [
     {
-      id: 'profilePhoto',
-      header: 'Photo',
+      id: "profilePhoto",
+      header: "Photo",
       size: 70,
       cell: ({ row }) => {
-        const photo = row.original.profilePhoto
-        const name = row.original.name
-        const initials = name.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
-        
+        const photo = row.original.profilePhoto;
+        const name = row.original.name;
+        const initials = name
+          .split(" ")
+          .slice(0, 2)
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase();
+
         return (
           <Avatar className="h-10 w-10 ring-2 ring-background border">
             <AvatarImage src={photo || undefined} alt={name} />
@@ -70,11 +82,11 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
               {initials}
             </AvatarFallback>
           </Avatar>
-        )
+        );
       },
     },
     {
-      accessorKey: 'registrationNumber',
+      accessorKey: "registrationNumber",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -92,7 +104,7 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      accessorKey: 'name',
+      accessorKey: "name",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -106,13 +118,15 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       cell: ({ row }) => (
         <div>
           <div className="font-medium">{row.original.name}</div>
-          <div className="text-sm text-muted-foreground">{row.original.email}</div>
+          <div className="text-sm text-muted-foreground">
+            {row.original.email}
+          </div>
         </div>
       ),
     },
     {
-      accessorKey: 'subject',
-      header: 'Subject',
+      accessorKey: "subject",
+      header: "Subject",
       cell: ({ row }) => (
         <Badge variant="secondary" className="font-normal">
           {row.original.subject}
@@ -120,8 +134,8 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      accessorKey: 'designation',
-      header: 'Designation',
+      accessorKey: "designation",
+      header: "Designation",
       cell: ({ row }) => (
         <div className="max-w-50 truncate" title={row.original.designation}>
           {row.original.designation}
@@ -129,16 +143,19 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      accessorKey: 'qualification',
-      header: 'Qualification',
+      accessorKey: "qualification",
+      header: "Qualification",
       cell: ({ row }) => (
-        <div className="max-w-[150px] truncate text-sm" title={row.original.qualification}>
+        <div
+          className="max-w-[150px] truncate text-sm"
+          title={row.original.qualification}
+        >
           {row.original.qualification}
         </div>
       ),
     },
     {
-      accessorKey: 'experience',
+      accessorKey: "experience",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -157,25 +174,27 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      accessorKey: 'gender',
-      header: 'Gender',
+      accessorKey: "gender",
+      header: "Gender",
       cell: ({ row }) => (
-        <Badge variant={row.original.gender === 'MALE' ? 'default' : 'secondary'}>
-          {row.original.gender === 'MALE' ? 'Male' : 'Female'}
+        <Badge
+          variant={row.original.gender === "MALE" ? "default" : "secondary"}
+        >
+          {row.original.gender === "MALE" ? "Male" : "Female"}
         </Badge>
       ),
     },
     {
-      accessorKey: 'contactNumber',
-      header: 'Contact',
-      cell: ({ row }) => row.original.contactNumber || 'N/A',
+      accessorKey: "contactNumber",
+      header: "Contact",
+      cell: ({ row }) => row.original.contactNumber || "N/A",
     },
     {
-      accessorKey: 'user.status',
-      header: 'Status',
+      accessorKey: "user.status",
+      header: "Status",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          {row.original.user?.status === 'ACTIVE' ? (
+          {row.original.user?.status === "ACTIVE" ? (
             <>
               <BadgeCheck className="h-4 w-4 text-green-500" />
               <span className="text-green-600 text-sm">Active</span>
@@ -190,14 +209,14 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      id: 'actions',
+      id: "actions",
       cell: ({ row }) => (
         <div className="flex gap-1">
-          <Link href={`/admin/dashboard/teacher-view/${row.original.id}`}>
+          <>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Eye className="h-4 w-4" />
             </Button>
-          </Link>
+          </>
           <Link href={`/admin/dashboard/teacher-edit/${row.original.id}`}>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Pencil className="h-4 w-4" />
@@ -206,13 +225,15 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
           <DeleteDialog
             id={row.original.id}
             name={row.original.name}
-            onDelete={() => setData(data.filter(teacher => teacher.id !== row.original.id))}
+            onDelete={() =>
+              setData(data.filter((teacher) => teacher.id !== row.original.id))
+            }
             deleteFn={handleDelete}
           />
         </div>
       ),
     },
-  ]
+  ];
 
   return (
     <div className="space-y-4">
@@ -230,13 +251,13 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
           </Button>
         </Link>
       </div>
-      <DataTable 
-        columns={columns} 
-        data={data} 
+      <DataTable
+        columns={columns}
+        data={data}
         isLoading={isLoading}
         searchColumn="name"
         searchPlaceholder="Search by name..."
       />
     </div>
-  )
+  );
 }

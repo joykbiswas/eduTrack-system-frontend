@@ -28,15 +28,15 @@ export const getAllTeachers = async (queryString?: string) => {
   }
 };
 
-export const getTeacherById = async (id: string) => {
-  try {
-    const teacher = await httpClient.get<ITeacher>(`/teacher/${id}`);
-    return teacher;
-  } catch (error) {
-    console.log("Error fetching teacher by id:", error);
-    throw error;
-  }
-};
+// export const getTeacherById = async (id: string) => {
+//   try {
+//     const teacher = await httpClient.get<ITeacher>(`/teacher/${id}`);
+//     return teacher;
+//   } catch (error) {
+//     console.log("Error fetching teacher by id:", error);
+//     throw error;
+//   }
+// };
 
 export const getAllStudents = async () => {
   try {
@@ -115,19 +115,6 @@ export const deleteAdmin = async (id: string) => {
   }
 };
 
-// ... rest unchanged (teacher/student/org/class use httpClient)
-// export const createTeacher = async (payload: ICreateTeacherPayload) => {
-//   try {
-//     const teacher = await httpClient.post('/teacher/create-teacher', payload);
-//     return teacher;
-//   } catch (error) {
-//     console.log("Error creating teacher:", error);
-//     throw error;
-//   }
-// };
-
-// services/admin.services.ts
-// services/admin.services.ts
 export const createTeacher = async (payload: ICreateTeacherPayload) => {
   console.log("Sending payload to API:", payload);
 
@@ -157,16 +144,53 @@ export const createTeacher = async (payload: ICreateTeacherPayload) => {
     throw new Error(error.message || 'Failed to create teacher');
   }
 };
+// services/admin.services.ts
 
-export const updateTeacher = async (id: string, payload: IUpdateTeacherPayload) => {
+// Get single teacher by ID
+export const getTeacherById = async (id: string) => {
   try {
-    const teacher = await httpClient.patch(`/teacher/${id}`, payload);
-    return teacher;
+    const response = await httpClient.get<ITeacher>(`/teacher/${id}`);
+    console.log("Get teacher response:", response);
+    return response;
   } catch (error) {
-    console.log("Error updating teacher:", error);
+    console.error("Error fetching teacher:", error);
     throw error;
   }
 };
+
+// Update teacher
+export const updateTeacher = async (id: string, payload: IUpdateTeacherPayload) => {
+  console.log("Updating teacher with payload:", payload);
+  
+  try {
+    const response = await httpClient.patch(`/teacher/${id}`, payload);
+    console.log("Update teacher response:", response);
+    return response;
+  } catch (error: any) {
+    console.error("Error updating teacher:", error);
+    
+    // Extract meaningful error message
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    
+    if (error.response?.data?.body?.message) {
+      throw new Error(error.response.data.body.message);
+    }
+    
+    throw new Error(error.message || 'Failed to update teacher');
+  }
+};
+
+// export const updateTeacher = async (id: string, payload: IUpdateTeacherPayload) => {
+//   try {
+//     const teacher = await httpClient.patch(`/teacher/${id}`, payload);
+//     return teacher;
+//   } catch (error) {
+//     console.log("Error updating teacher:", error);
+//     throw error;
+//   }
+// };
 
 export const deleteTeacher = async (id: string) => {
   try {

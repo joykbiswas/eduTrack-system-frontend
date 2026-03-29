@@ -10,7 +10,7 @@ async function getTeachersData() {
   try {
     const response = await getAllTeachers()
     // Adjust based on your actual response structure
-    const teachers = response.data?.data?.teachers || response.data?.teachers || []
+    const teachers = response.data?.teachers || []
     return teachers
   } catch (error) {
     console.error('Failed to fetch teachers:', error)

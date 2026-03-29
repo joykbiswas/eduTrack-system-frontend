@@ -34,7 +34,7 @@ export const teacherCreateSchema = z.object({
   }),
 })
 
-export const teacherUpdateSchema = teacherCreateSchema.partial().omit({ password: true });
+// export const teacherUpdateSchema = teacherCreateSchema.partial().omit({ password: true });
 
 export const studentCreateSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -69,3 +69,28 @@ export const classCreateSchema = z.object({
 
 export const classUpdateSchema = classCreateSchema.partial();
 
+// zod/admin.schemas.ts
+
+export const teacherUpdateSchema = z.object({
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters long')
+    .max(50, 'Password is too long')
+    .optional()
+    .or(z.literal('')), // Allow empty string (no password change)
+  teacher: z.object({
+    name: z.string().min(1, 'Name is required').optional(),
+    email: z.string().email('Invalid email format').optional(),
+    contactNumber: z.string().optional(),
+    address: z.string().optional(),
+    registrationNumber: z.string()
+      .min(1, 'Registration number is required')
+      .regex(/^[A-Za-z0-9-]+$/, 'Registration number can only contain letters, numbers, and hyphens')
+      .optional(),
+    experience: z.number().min(0, 'Experience cannot be negative').max(50, 'Experience seems too high').optional(),
+    gender: z.enum(['MALE', 'FEMALE']).optional(),
+    qualification: z.string().min(1, 'Qualification is required').optional(),
+    currentWorkingPlace: z.string().min(1, 'Current workplace is required').optional(),
+    designation: z.string().min(1, 'Designation is required').optional(),
+    subject: z.string().min(1, 'Subject is required').optional(),
+  }),
+});
