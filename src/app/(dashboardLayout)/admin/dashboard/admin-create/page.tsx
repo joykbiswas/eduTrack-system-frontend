@@ -1,8 +1,10 @@
+import { AdminCreateForm } from '@/components/admin/admin-create-form'
 
-const AdminCreatePage = () => {
+export default function AdminCreatePage() {
   return (
-    <div>AdminCreatePage</div>
+    <main className="min-h-screen bg-background">
+      <AdminCreateForm />
+    </main>
   )
 }
 
-export default AdminCreatePage
