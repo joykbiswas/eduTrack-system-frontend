@@ -4,18 +4,6 @@
 import { httpClient } from "@/lib/axios/httpClient";
 import { ApiResponse } from "@/types/api.types";
 import { ICreateWordStoryCardRequest, IWordStoryCard } from "@/types/word-story.types";
-// import { ICreateWordStoryCardRequest, IWordStoryCard } from "@/types/word-story-card.types";
-
-interface CloudinaryUploadResponse {
-    secure_url: string;
-    public_id: string;
-    url: string;
-    format: string;
-    width: number;
-    height: number;
-    bytes: number;
-    created_at: string;
-}
 
 export const wordStoryCardService = {
     createWordStoryCard: async (data: ICreateWordStoryCardRequest): Promise<ApiResponse<IWordStoryCard>> => {

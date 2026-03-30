@@ -18,7 +18,7 @@ export const createWordStoryCard = async (data: ICreateWordStoryCardRequest) => 
     }
 };
 
-export const getWordStoryCards = async () => {
+export const getAllWordStoryCards = async () => {
     try {
         const response = await wordStoryCardService.getWordStoryCards();
         return response;

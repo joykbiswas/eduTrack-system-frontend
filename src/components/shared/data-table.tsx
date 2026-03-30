@@ -52,6 +52,7 @@ interface DataTableProps<TData, TValue> {
   // ✅ NEW (optional — safe for reuse)
   enableExpand?: boolean;
   renderSubComponent?: (row: any) => React.ReactNode;
+  rowCanExpand?: (row: any) => boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -62,6 +63,7 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Search...",
   enableExpand = false,
   renderSubComponent,
+  rowCanExpand,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -73,6 +75,17 @@ export function DataTable<TData, TValue>({
   const [expandedRows, setExpandedRows] = React.useState<
     Record<string, boolean>
   >({});
+
+  const defaultRowCanExpand = (row: any) =>
+    ((row.original as any)?.assignedTasks?.length > 0 ||
+      (row.original as any)?.classes?.length > 0 ||
+      (row.original as any)?.classItem?.length > 0 ||
+      (row.original as any)?.lookups?.length > 0 ||
+      (row.original as any)?.quizzes?.length > 0 ||
+      (row.original as any)?.materials?.length > 0 ||
+      (row.original as any)?.assessments?.length > 0);
+
+  const canExpandRow = (row: any) => rowCanExpand ? rowCanExpand(row) : defaultRowCanExpand(row);
 
   const memoData = React.useMemo(() => data, [data]);
   const memoColumns = React.useMemo(() => columns, [columns]);
@@ -172,55 +185,63 @@ export function DataTable<TData, TValue>({
 
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  {/* Main Row */}
-                  <TableRow
-                    data-state={row.getIsSelected() && "selected"}
-                    className={
-                      enableExpand &&
-                      ((row.original as any)?.assignedTasks?.length > 0 ||
-                        (row.original as any)?.classes?.length > 0 ||
-                        (row.original as any)?.classItem?.length > 0 ||
-                        (row.original as any)?.lookups?.length > 0)
-                        ? "cursor-pointer"
-                        : undefined
-                    }
-                    onClick={() => {
-                      if (
-                        enableExpand &&
-                        ((row.original as any)?.assignedTasks?.length > 0 ||
-                          (row.original as any)?.classes?.length > 0 ||
-                          (row.original as any)?.classItem?.length > 0 ||
-                          (row.original as any)?.lookups?.length > 0)
-                      ) {
-                        setExpandedRows((prev) => ({
-                          ...prev,
-                          [row.id]: !prev[row.id],
-                        }));
-                      }
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
+              table.getRowModel().rows.map((row) => {
+                const isExpanded = expandedRows[row.id];
 
-                  {/* ✅ Expanded Row */}
-                  {enableExpand && expandedRows[row.id] && (
-                    <TableRow>
-                      <TableCell colSpan={columns.length}>
-                        {renderSubComponent?.(row)}
-                      </TableCell>
+                const toggleExpanded = () => {
+                  setExpandedRows((prev) => ({
+                    ...prev,
+                    [row.id]: !prev[row.id],
+                  }));
+                };
+
+                const rowWithExpandedState = Object.create(row);
+                rowWithExpandedState.getIsExpanded = () => isExpanded;
+                rowWithExpandedState.getToggleExpandedHandler = () => toggleExpanded;
+                rowWithExpandedState.toggleExpanded = toggleExpanded;
+
+                const isExpandable = canExpandRow(row);
+
+                return (
+                  <React.Fragment key={row.id}>
+                    {/* Main Row */}
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      className={isExpandable ? "cursor-pointer" : undefined}
+                      onClick={() => {
+                        if (enableExpand && isExpandable) {
+                          toggleExpanded();
+                        }
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const cellContext = {
+                          ...cell.getContext(),
+                          row: rowWithExpandedState,
+                        } as any;
+
+                        return (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cellContext,
+                            )}
+                          </TableCell>
+                        );
+                      })}
                     </TableRow>
-                  )}
-                </React.Fragment>
-              ))
+
+                    {/* ✅ Expanded Row */}
+                    {enableExpand && isExpanded && (
+                      <TableRow>
+                        <TableCell colSpan={columns.length}>
+                          {renderSubComponent?.(rowWithExpandedState)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell
