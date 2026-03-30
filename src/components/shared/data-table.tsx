@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import {
@@ -180,6 +181,7 @@ export function DataTable<TData, TValue>({
                       enableExpand &&
                       ((row.original as any)?.assignedTasks?.length > 0 ||
                         (row.original as any)?.classes?.length > 0 ||
+                        (row.original as any)?.classItem?.length > 0 ||
                         (row.original as any)?.lookups?.length > 0)
                         ? "cursor-pointer"
                         : undefined
@@ -189,6 +191,7 @@ export function DataTable<TData, TValue>({
                         enableExpand &&
                         ((row.original as any)?.assignedTasks?.length > 0 ||
                           (row.original as any)?.classes?.length > 0 ||
+                          (row.original as any)?.classItem?.length > 0 ||
                           (row.original as any)?.lookups?.length > 0)
                       ) {
                         setExpandedRows((prev) => ({
@@ -261,7 +264,7 @@ export function DataTable<TData, TValue>({
             </Select>
           </div>
 
-          <div className="flex w-[100px] justify-center text-sm font-medium">
+          <div className="flex w-25 justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </div>

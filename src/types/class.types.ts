@@ -74,7 +74,11 @@ export interface IClass {
     updatedAt: string;
     organization?: IOrganization;
     teacher?: ITeacher;
+    students?: any[];
+    tasks?: any[];
+    messages?: any[];
 }
+
 
 export interface ICreateClassRequest {
     name: string;

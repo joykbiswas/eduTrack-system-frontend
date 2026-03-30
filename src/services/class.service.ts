@@ -14,7 +14,7 @@ export const classService = {
         const response = await httpClient.get<IClass[]>(queryString ? `/classes?${queryString}` : '/classes');
         return response;
     },
-
+         
     getClassById: async (id: string): Promise<ApiResponse<IClass>> => {
         const response = await httpClient.get<IClass>(`/classes/${id}`);
         return response;

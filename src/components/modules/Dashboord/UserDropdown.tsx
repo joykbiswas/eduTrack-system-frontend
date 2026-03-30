@@ -41,10 +41,10 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
             <DropdownMenuSeparator/>
 
             <DropdownMenuItem>
-                <Link href={"/my-profile"}>
+                {/* <Link href={"/my-profile"}> */}
                 <User className="mr-2 h-4 w-4"/>
                     My Profile
-                </Link>
+                {/* </Link> */}
             </DropdownMenuItem>
 
             <DropdownMenuItem>

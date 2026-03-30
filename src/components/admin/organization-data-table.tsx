@@ -21,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
 import Link from "next/link";
 import {
   getAllOrganizations,
@@ -127,16 +126,11 @@ export function OrganizationDataTable() {
           <DeleteDialog
             id={row.original.id}
             name={row.original.name}
-            // deleteFn শুধু এপিআই কলটি হ্যান্ডেল করবে
             deleteFn={async (id) => {
               await deleteOrganization(id);
             }}
-            // onDelete সফলভাবে ডিলিট হওয়ার পরের কাজগুলো করবে
             onDelete={() => {
-              // 🔄 ডাটা রিফেচ করার জন্য
               queryClient.invalidateQueries({ queryKey: ["organizations"] });
-              // toast সাকসেস মেসেজটি চাইলে এখান থেকেও দিতে পারেন
-              // অথবা আপনার DeleteDialog এর ভেতর থেকেও আসবে
             }}
           />
         </div>

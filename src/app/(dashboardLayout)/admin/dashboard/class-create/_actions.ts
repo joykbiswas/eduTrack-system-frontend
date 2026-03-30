@@ -18,6 +18,27 @@ export const createClass = async (data: ICreateClassRequest) => {
     }
 };
 
+export const getAllClasses = async () => {
+    try {
+        const response = await classService.getClasses();
+        return response;
+    } catch (error) {
+        console.error("Error fetching classes:", error);
+        throw error;
+    }
+};
+
+export const deleteClass = async (id: string) => {
+    try {
+        const response = await classService.deleteClass(id);
+        return response;
+    } catch (error) {
+        console.error("Error deleting class:", error);
+        throw error;
+    }
+};
+
+
 export const fetchOrganizations = async () => {
     try {
         const response = await getAllOrganizations();
