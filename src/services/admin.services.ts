@@ -5,7 +5,7 @@ import { httpClient } from "@/lib/axios/httpClient";
 import {  IAdmin } from "@/types/admin.types";
 import { ITeachersResponse, ITeacher, ICreateTeacherPayload, IUpdateTeacherPayload } from "@/types/teacher.types";
 import { IStudentsResponse } from "@/types/student.types";
-import { IOrganization } from "@/types/organization.types";
+import { CreateOrganizationRequest, CreateOrganizationResponse, IOrganization } from "@/types/organization.types";
 import { IClass } from "@/types/class.types";
 
 export const getAllAdmins = async () => {
@@ -48,9 +48,26 @@ export const getAllStudents = async () => {
   }
 };
 
-export const getAllOrganizations = async () => {
+// export const getAllOrganizations = async () => {
+//   try {
+//     const organizations = await httpClient.get<IOrganization[]>("/organizations");
+//     return organizations;
+//   } catch (error) {
+//     console.log("Error fetching organizations:", error);
+//     throw error;
+//   }
+// };
+
+// services/admin.services.ts
+
+export const getAllOrganizations = async (queryString?: string) => {
   try {
-    const organizations = await httpClient.get<IOrganization[]>("/organizations");
+    const organizations = await httpClient.get<IOrganization[]>(
+      queryString
+        ? `/organizations?${queryString}`
+        : "/organizations"
+    );
+
     return organizations;
   } catch (error) {
     console.log("Error fetching organizations:", error);
@@ -240,13 +257,44 @@ export const deleteStudent = async (id: string) => {
   }
 };
 
-export const createOrganization = async (payload: { name: string; description: string; logo?: string }) => {
+// export const createOrganization = async (payload: { name: string; description: string; logo?: string }) => {
+//   try {
+//     const org = await httpClient.post('/organizations', payload);
+//     return org;
+//   } catch (error) {
+//     console.log("Error creating organization:", error);
+//     throw error;
+//   }
+// };
+
+export const createOrganization = async (payload: CreateOrganizationRequest): Promise<CreateOrganizationResponse> => {
+  console.log("Sending payload to API:- ", payload);
   try {
-    const org = await httpClient.post('/organizations', payload);
-    return org;
+    const response = await httpClient.post<CreateOrganizationResponse['data']>(
+      '/organizations/',
+      payload
+    );
+
+    // Normalize the response shape so the component always receives:
+    // { success, message, data }
+    if (
+      response &&
+      typeof response === 'object' &&
+      'success' in response &&
+      'message' in response &&
+      'data' in response
+    ) {
+      return response as CreateOrganizationResponse;
+    }
+
+    return {
+      success: true,
+      message: 'Organization created successfully',
+      data: response as CreateOrganizationResponse['data'],
+    };
   } catch (error) {
-    console.log("Error creating organization:", error);
-    throw error;
+    console.error("Error creating organization:", error);
+    throw error; // Re-throw so form can catch and show proper toast
   }
 };
 

@@ -1,8 +1,9 @@
+import { OrganizationCreateForm } from "@/components/admin/organization-create-form";
 
-const OrganizationsCreatePage = () => {
+export default function NewOrganizationPage() {
   return (
-    <div>organizationsCreatePage</div>
-  )
+    <div className="container mx-auto py-10">
+      <OrganizationCreateForm />
+    </div>
+  );
 }
-
-export default OrganizationsCreatePage

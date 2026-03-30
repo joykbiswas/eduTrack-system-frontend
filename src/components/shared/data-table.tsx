@@ -1,4 +1,4 @@
-// components/shared/data-table.tsx (updated)
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react"
 import {
   ColumnDef,
@@ -47,6 +47,10 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean
   searchColumn?: string
   searchPlaceholder?: string
+
+  // ✅ NEW (optional — safe for reuse)
+  enableExpand?: boolean
+  renderSubComponent?: (row: any) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -55,15 +59,22 @@ export function DataTable<TData, TValue>({
   isLoading = false,
   searchColumn = "name",
   searchPlaceholder = "Search...",
+  enableExpand = false,
+  renderSubComponent,
 }: DataTableProps<TData, TValue>) {
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
+
+  const memoData = React.useMemo(() => data, [data])
+  const memoColumns = React.useMemo(() => columns, [columns])
 
   const table = useReactTable({
-    data,
-    columns,
+    data: memoData,
+    columns: memoColumns,
     state: {
       sorting,
       columnVisibility,
@@ -75,6 +86,7 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -93,6 +105,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
+      {/* 🔍 Search + Column toggle */}
       <div className="flex items-center py-4 gap-4">
         <Input
           placeholder={searchPlaceholder}
@@ -102,107 +115,150 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) =>
+                    column.toggleVisibility(!!value)
+                  }
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* 📊 Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} style={{ width: header.getSize() }}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  {/* Main Row */}
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    className={
+                      enableExpand &&
+                      ((row.original as any)?.classes?.length > 0 ||
+                        (row.original as any)?.lookups?.length > 0)
+                        ? "cursor-pointer"
+                        : undefined
+                    }
+                    onClick={() => {
+                      if (
+                        enableExpand &&
+                        ((row.original as any)?.classes?.length > 0 ||
+                          (row.original as any)?.lookups?.length > 0)
+                      ) {
+                        setExpandedRows((prev) => ({
+                          ...prev,
+                          [row.id]: !prev[row.id],
+                        }))
+                      }
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {/* ✅ Expanded Row */}
+                  {enableExpand && expandedRows[row.id] && (
+                    <TableRow>
+                      <TableCell colSpan={columns.length}>
+                        {renderSubComponent?.(row)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No teachers found.
+                  No data found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
+      {/* 📄 Pagination */}
       <div className="flex items-center justify-between py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
+
         <div className="flex items-center space-x-6 lg:space-x-8">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">Rows per page</p>
+
             <Select
               value={`${table.getState().pagination.pageSize}`}
-              onValueChange={(value) => {
+              onValueChange={(value) =>
                 table.setPageSize(Number(value))
-              }}
+              }
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue />
               </SelectTrigger>
+
               <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={`${size}`}>
+                    {size}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+
+          <div className="flex w-[100px] justify-center text-sm font-medium">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </div>
+
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -212,6 +268,7 @@ export function DataTable<TData, TValue>({
             >
               Previous
             </Button>
+
             <Button
               variant="outline"
               size="sm"
