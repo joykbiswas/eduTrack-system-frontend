@@ -24,11 +24,14 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { z } from 'zod'
 import { useState } from 'react'
+// TanStack Query Imports
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type FormValues = z.infer<typeof teacherCreateSchema>
 
 export function TeacherCreateForm() {
   const router = useRouter()
+  const queryClient = useQueryClient() // ক্যাশ ইনভ্যালিডেশনের জন্য
   const [serverError, setServerError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
@@ -51,65 +54,53 @@ export function TeacherCreateForm() {
     },
   })
 
-  const onSubmit = async (values: FormValues) => {
-    console.log("Submitting teacher form with values:", values);
-    setServerError(null); // Clear previous server errors
-    
-    try {
-      const response = await createTeacher(values);
-      console.log("Teacher created successfully. API response:", response);
-      
-      if(!response || response.success !== true) {
+  // TanStack Query Mutation Logic
+  const { mutate, isPending } = useMutation({
+    mutationFn: createTeacher,
+    onSuccess: (response) => {
+      if (response?.success === true) {
+        toast.success(response.message || 'Teacher created successfully');
+        
+        // টিচার লিস্ট আপডেট করার জন্য ক্যাশ ক্লিয়ার করা
+        queryClient.invalidateQueries({ queryKey: ['teachers'] });
+        
+        router.push('/admin/dashboard/teacher-list');
+        router.refresh();
+      } else {
         throw new Error(response?.message || 'Failed to create teacher');
       }
-      if (response.success === true) {
-      toast.success(response.message || 'Teacher created successfully');
-      router.push('/admin/dashboard/teacher-list');
-      // Use window.location for guaranteed redirect
-      // window.location.href = '/admin/dashboard/teacher-list';
-    } else {
-      throw new Error(response.message || 'Failed to create teacher');
-    }
-      router.refresh();
-    } catch (error: any) {
-      console.error("Error in onSubmit:", error);
-      
-      // Extract error message
+    },
+    onError: (error: any) => {
       const errorMessage = error.message || 'Failed to create teacher';
-      
-      // Set server error for display
       setServerError(errorMessage);
-      
-      // Show specific error messages based on content
+
+      // স্পেসিফিক ফিল্ড এরর ম্যাপিং
       if (errorMessage.includes('registrationNumber') || errorMessage.includes('already exists')) {
-        toast.error('Registration number already exists. Please use a unique registration number.');
-        // Set field-specific error
         form.setError('teacher.registrationNumber', {
           type: 'manual',
-          message: 'This registration number is already taken. Please use a different one.'
+          message: 'This registration number is already taken.'
         });
-      } 
-      else if (errorMessage.includes('Password') || errorMessage.includes('password')) {
-        toast.error('Password is too short. Please use at least 8 characters.');
-        // Set field-specific error
+      } else if (errorMessage.includes('email')) {
+        form.setError('teacher.email', {
+          type: 'manual',
+          message: 'This email is already registered.'
+        });
+      } else if (errorMessage.includes('password')) {
         form.setError('password', {
           type: 'manual',
           message: 'Password must be at least 8 characters long'
         });
       }
-      else if (errorMessage.includes('email')) {
-        toast.error('Email already exists. Please use a different email address.');
-        form.setError('teacher.email', {
-          type: 'manual',
-          message: 'This email is already registered. Please use a different one.'
-        });
-      }
-      else {
-        toast.error(errorMessage);
-      }
+      
+      toast.error(errorMessage);
     }
+  });
+
+  const onSubmit = (values: FormValues) => {
+    setServerError(null);
+    mutate(values); // মিউটেশন কল করা হচ্ছে
   };
-  
+
   return (
     <div className="container mx-auto max-w-2xl">
       <Button variant="ghost" onClick={() => router.back()} className="mb-6">
@@ -122,7 +113,6 @@ export function TeacherCreateForm() {
           <CardDescription>Add a new teacher to the system.</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Display server error message */}
           {serverError && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
               <p className="font-semibold">Error:</p>
@@ -159,7 +149,7 @@ export function TeacherCreateForm() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="teacher.contactNumber"
@@ -197,7 +187,7 @@ export function TeacherCreateForm() {
                     <FormControl>
                       <Input placeholder="TCH-001" {...field} />
                     </FormControl>
-                    <FormDescription>Must be unique. This number will be used to identify the teacher.</FormDescription>
+                    <FormDescription>Must be unique.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -310,9 +300,9 @@ export function TeacherCreateForm() {
                   <FormItem>
                     <FormLabel>Password *</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Enter password (min. 8 characters)" {...field} />
+                      <Input type="password" placeholder="Enter password" {...field} />
                     </FormControl>
-                    <FormDescription>Password must be at least 8 characters long.</FormDescription>
+                    <FormDescription>Min. 8 characters.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -322,8 +312,9 @@ export function TeacherCreateForm() {
                 <Button type="button" variant="outline" onClick={() => router.back()}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Creating...' : 'Create Teacher'}
+                {/* isPending ব্যবহার করে লোডিং স্টেট দেখানো হচ্ছে */}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? 'Creating...' : 'Create Teacher'}
                 </Button>
               </div>
             </form>

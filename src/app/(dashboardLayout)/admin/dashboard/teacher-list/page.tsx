@@ -1,30 +1,25 @@
-// app/admin/dashboard/teacher-list/page.tsx
 import { Suspense } from 'react'
-// import { TeacherDataTable } from './components/admin/teacher-data-table'
 import { getAllTeachers } from '@/services/admin.services'
-import { Card, CardContent,  CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TeacherDataTable } from '@/components/admin/teacher-data-table'
-
-async function getTeachersData() {
-  try {
-    const response = await getAllTeachers()
-    // Adjust based on your actual response structure
-    const teachers = response.data?.teachers || []
-    return teachers
-  } catch (error) {
-    console.error('Failed to fetch teachers:', error)
-    return []
-  }
-}
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 
 export default async function TeacherListPage() {
-  const teachers = await getTeachersData()
+  const queryClient = new QueryClient();
+
+  // সার্ভারে টিচারদের ডাটা প্রি-ফেচ করা হচ্ছে
+  await queryClient.prefetchQuery({
+    queryKey: ["teachers"],
+    queryFn: () => getAllTeachers(),
+  });
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       <Suspense fallback={<TeacherListSkeleton />}>
-        <TeacherDataTable teachers={teachers} />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <TeacherDataTable />
+        </HydrationBoundary>
       </Suspense>
     </div>
   )

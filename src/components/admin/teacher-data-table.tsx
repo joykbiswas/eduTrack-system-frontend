@@ -1,8 +1,6 @@
-// app/admin/dashboard/teacher-list/components/teacher-data-table.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import { DeleteDialog } from "./delete-dialog";
@@ -22,43 +20,16 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface TeacherDataTableProps {
-  teachers: ITeacher[];
-}
+export function TeacherDataTable() {
+  const queryClient = useQueryClient();
 
-export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
-  const pathname = usePathname();
-  const [data, setData] = useState(teachers);
-  const [isLoading, setIsLoading] = useState(false);
+  // 🔄 TanStack Query ইন্টিগ্রেশন
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["teachers"],
+    queryFn: () => getAllTeachers(),
+  });
 
-  const refreshData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await getAllTeachers();
-      // Handle the response structure based on your API
-      const teachersData = response.data?.teachers || [];
-      setData(teachersData);
-    } catch (error) {
-      toast.error("Failed to load teachers");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteTeacher(id);
-      toast.success("Teacher deleted successfully");
-      await refreshData();
-    } catch (error) {
-      toast.error("Failed to delete teacher");
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    refreshData();
-  }, [pathname]);
+  const teachersData = response?.data?.teachers || [];
 
   const columns: ColumnDef<ITeacher>[] = [
     {
@@ -143,18 +114,6 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       ),
     },
     {
-      accessorKey: "qualification",
-      header: "Qualification",
-      cell: ({ row }) => (
-        <div
-          className="max-w-[150px] truncate text-sm"
-          title={row.original.qualification}
-        >
-          {row.original.qualification}
-        </div>
-      ),
-    },
-    {
       accessorKey: "experience",
       header: ({ column }) => (
         <Button
@@ -172,22 +131,6 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
           <span className="text-muted-foreground text-sm ml-1">years</span>
         </div>
       ),
-    },
-    {
-      accessorKey: "gender",
-      header: "Gender",
-      cell: ({ row }) => (
-        <Badge
-          variant={row.original.gender === "MALE" ? "default" : "secondary"}
-        >
-          {row.original.gender === "MALE" ? "Male" : "Female"}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "contactNumber",
-      header: "Contact",
-      cell: ({ row }) => row.original.contactNumber || "N/A",
     },
     {
       accessorKey: "user.status",
@@ -212,11 +155,9 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex gap-1">
-          <>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Eye className="h-4 w-4" />
-            </Button>
-          </>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Eye className="h-4 w-4" />
+          </Button>
           <Link href={`/admin/dashboard/teacher-edit/${row.original.id}`}>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Pencil className="h-4 w-4" />
@@ -225,10 +166,13 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
           <DeleteDialog
             id={row.original.id}
             name={row.original.name}
-            onDelete={() =>
-              setData(data.filter((teacher) => teacher.id !== row.original.id))
-            }
-            deleteFn={handleDelete}
+            deleteFn={async (id) => {
+              await deleteTeacher(id);
+            }}
+            onDelete={() => {
+              queryClient.invalidateQueries({ queryKey: ["teachers"] });
+              toast.success("Teacher deleted successfully");
+            }}
           />
         </div>
       ),
@@ -253,7 +197,7 @@ export function TeacherDataTable({ teachers }: TeacherDataTableProps) {
       </div>
       <DataTable
         columns={columns}
-        data={data}
+        data={teachersData}
         isLoading={isLoading}
         searchColumn="name"
         searchPlaceholder="Search by name..."

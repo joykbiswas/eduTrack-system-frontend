@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useForm } from 'react-hook-form'
@@ -21,11 +22,16 @@ import { createAdmin } from '@/services/admin.services'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { useState } from 'react'
+// TanStack Query Imports
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type FormValues = z.infer<typeof adminCreateSchema>
 
 export function AdminCreateForm() {
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(adminCreateSchema),
@@ -40,14 +46,40 @@ export function AdminCreateForm() {
     },
   })
 
-  const onSubmit = async (values: FormValues) => {
-    try {
-      await createAdmin(values)
-      toast.success('Admin created successfully')
-      router.push('/admin/dashboard/admin-list');
-    } catch (error) {
-      toast.error('Failed to create admin')
+  // TanStack Query Mutation
+  const { mutate, isPending } = useMutation({
+    mutationFn: createAdmin,
+    onSuccess: (response: any) => {
+      // আপনার এপিআই রেসপন্স স্ট্রাকচার অনুযায়ী চেক
+      if (response?.success || response?.id) {
+        toast.success('Admin created successfully')
+        
+        // অ্যাডমিন লিস্টের ক্যাশ রিফ্রেশ করা
+        queryClient.invalidateQueries({ queryKey: ['admins'] })
+        
+        router.push('/admin/dashboard/admin-list')
+        router.refresh()
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to create admin'
+      setServerError(errorMessage)
+      
+      // ইমেইল অলরেডি থাকলে ফিল্ডে এরর দেখানো
+      if (errorMessage.toLowerCase().includes('email')) {
+        form.setError('admin.email', {
+          type: 'manual',
+          message: 'This email is already in use.'
+        })
+      }
+      
+      toast.error(errorMessage)
     }
+  })
+
+  const onSubmit = (values: FormValues) => {
+    setServerError(null)
+    mutate(values)
   }
 
   return (
@@ -62,6 +94,13 @@ export function AdminCreateForm() {
           <CardDescription>Add a new admin user to the system.</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* সার্ভার এরর মেসেজ ডিসপ্লে (ঐচ্ছিক কিন্তু ভালো প্র্যাকটিস) */}
+          {serverError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+              <p className="font-semibold">Error: {serverError}</p>
+            </div>
+          )}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -138,13 +177,14 @@ export function AdminCreateForm() {
                   </FormItem>
                 )}
               />
-              {/*  */}
+              
               <div className="flex gap-4">
                 <Button type="button" variant="outline" onClick={() => router.back()}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? 'Creating...' : 'Create Admin'}
+                {/* isPending ব্যবহার করে লোডিং হ্যান্ডেল করা হয়েছে */}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? 'Creating...' : 'Create Admin'}
                 </Button>
               </div>
             </form>
@@ -154,4 +194,3 @@ export function AdminCreateForm() {
     </div>
   )
 }
-

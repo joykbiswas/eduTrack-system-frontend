@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
@@ -28,42 +27,28 @@ import {
   getAllOrganizations,
   deleteOrganization,
 } from "@/services/admin.services";
-import { DeleteDialog } from "./delete-dialog";
+// import { DeleteDialog } from "./delete-dialog";
 import { IClass, IOrganization } from "@/types/organization.types";
+import { DeleteDialog } from "./delete-dialog";
 
-interface Props {
-  organizations: IOrganization[];
-}
+export function OrganizationDataTable() {
+  const queryClient = useQueryClient();
 
-export function OrganizationDataTable({ organizations }: Props) {
-  const pathname = usePathname();
-  const [data, setData] = useState(organizations);
+  // 🔄 useQuery ব্যবহার করে ডাটা ফেচিং
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["organizations"],
+    queryFn: () => getAllOrganizations(),
+  });
+
+  const data = response?.data || [];
+
+  // 🔍 Expand logic based on fetched data
   const enableExpand = data.some(
-    (org) => (org.classes?.length ?? 0) > 0 || (org.lookups?.length ?? 0) > 0
+    (org) => (org.classes?.length ?? 0) > 0 || (org.lookups?.length ?? 0) > 0,
   );
-  console.log("==Data ==: ", data);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // 🔄 Refresh
-  const refreshData = async () => {
-    setIsLoading(true);
-    try {
-      const res = await getAllOrganizations();
-      setData(res.data || []);
-    } catch {
-      toast.error("Failed to load organizations");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    refreshData();
-  }, [pathname]);
 
   // 🧱 Columns
   const columns: ColumnDef<IOrganization>[] = [
-    // Expand
     {
       id: "expand",
       header: "",
@@ -72,9 +57,7 @@ export function OrganizationDataTable({ organizations }: Props) {
           (row.original.classes?.length ?? 0) > 0 ||
           (row.original.lookups?.length ?? 0) > 0;
 
-        if (!hasDetails) {
-          return null;
-        }
+        if (!hasDetails) return null;
 
         return (
           <button onClick={row.getToggleExpandedHandler()}>
@@ -87,26 +70,18 @@ export function OrganizationDataTable({ organizations }: Props) {
         );
       },
     },
-
-    // Name
     {
       accessorKey: "name",
       header: ({ column }) => (
         <Button
           variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Name <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => (
-        <div className="font-medium">{row.original.name}</div>
-      ),
+      cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
     },
-
-    // Parent
     {
       id: "parent",
       header: "Parent",
@@ -116,30 +91,20 @@ export function OrganizationDataTable({ organizations }: Props) {
         </span>
       ),
     },
-
-    // Description
     {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="max-w-62.5 truncate">
-          {row.original.description}
-        </div>
+        <div className="max-w-62.5 truncate">{row.original.description}</div>
       ),
     },
-
-    // Classes Count
     {
       id: "classes",
       header: "Classes",
       cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.original.classes?.length || 0}
-        </Badge>
+        <Badge variant="secondary">{row.original.classes?.length || 0}</Badge>
       ),
     },
-
-    // Created
     {
       accessorKey: "createdAt",
       header: "Created",
@@ -149,51 +114,44 @@ export function OrganizationDataTable({ organizations }: Props) {
         </span>
       ),
     },
-
-    // Actions
     {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex gap-2">
-          {/* Edit */}
-          <Link
-            href={`/admin/dashboard/organization-edit/${row.original.id}`}
-          >
+          <Link href={`/admin/dashboard/organization-edit/${row.original.id}`}>
             <Button size="sm" variant="ghost">
               <Pencil className="h-4 w-4" />
             </Button>
           </Link>
 
-          {/* Delete */}
           <DeleteDialog
             id={row.original.id}
             name={row.original.name}
+            // deleteFn শুধু এপিআই কলটি হ্যান্ডেল করবে
             deleteFn={async (id) => {
               await deleteOrganization(id);
-              toast.success("Deleted successfully");
-              refreshData();
             }}
-            onDelete={() =>
-              setData((prev) =>
-                prev.filter((org) => org.id !== row.original.id)
-              )
-            }
+            // onDelete সফলভাবে ডিলিট হওয়ার পরের কাজগুলো করবে
+            onDelete={() => {
+              // 🔄 ডাটা রিফেচ করার জন্য
+              queryClient.invalidateQueries({ queryKey: ["organizations"] });
+              // toast সাকসেস মেসেজটি চাইলে এখান থেকেও দিতে পারেন
+              // অথবা আপনার DeleteDialog এর ভেতর থেকেও আসবে
+            }}
           />
         </div>
       ),
     },
   ];
 
-  // 🎯 Expanded Row Renderer
+  // 🎯 Expanded Row Renderer (আপনার বিদ্যমান ডিজাইন বজায় রাখা হয়েছে)
   const renderSubComponent = (row: any) => {
     const classes = row.original.classes;
     const lookups = row.original.lookups;
     const hasClasses = classes?.length > 0;
     const hasLookups = lookups?.length > 0;
 
-    if (!hasClasses && !hasLookups) {
-      return null;
-    }
+    if (!hasClasses && !hasLookups) return null;
 
     return (
       <div className="rounded-lg border bg-muted shadow-sm">
@@ -220,7 +178,6 @@ export function OrganizationDataTable({ organizations }: Props) {
                   <TableHead>Description</TableHead>
                   <TableHead>Academic Year</TableHead>
                   <TableHead>Section</TableHead>
-                  {/* <TableHead>Class No.</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -230,7 +187,6 @@ export function OrganizationDataTable({ organizations }: Props) {
                     <TableCell>{cls.description}</TableCell>
                     <TableCell>{cls.academicYear}</TableCell>
                     <TableCell>{cls.sectionCode}</TableCell>
-                    {/* <TableCell>{cls.classNumber}</TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
@@ -270,13 +226,10 @@ export function OrganizationDataTable({ organizations }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Organizations</h2>
-          <p className="text-muted-foreground">
-            Manage all organizations
-          </p>
+          <p className="text-muted-foreground">Manage all organizations</p>
         </div>
 
         <Link href="/admin/dashboard/organization-create">
@@ -287,7 +240,6 @@ export function OrganizationDataTable({ organizations }: Props) {
         </Link>
       </div>
 
-      {/* Table */}
       <DataTable
         columns={columns}
         data={data}

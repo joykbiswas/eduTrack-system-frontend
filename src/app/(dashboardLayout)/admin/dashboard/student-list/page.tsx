@@ -1,8 +1,9 @@
+import { StudentDataTable } from "@/components/admin/student-data-table";
 
-const StudentListPage = () => {
+export default function StudentListPage() {
   return (
-    <div>StudentListPage</div>
+    <main className="min-h-screen bg-background p-8">
+      <StudentDataTable />
+    </main>
   )
 }
-
-export default StudentListPage

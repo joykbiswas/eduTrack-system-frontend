@@ -22,9 +22,7 @@ export const teacherCreateSchema = z.object({
     email: z.string().email('Invalid email format'),
     contactNumber: z.string().optional(),
     address: z.string().optional(),
-    registrationNumber: z.string()
-      .min(1, 'Registration number is required')
-      .regex(/^[A-Za-z0-9-]+$/, 'Registration number can only contain letters, numbers, and hyphens'),
+    registrationNumber: z.string().min(1, 'Registration number is required'),
     experience: z.number().min(0, 'Experience cannot be negative').max(50, 'Experience seems too high'),
     gender: z.enum(['MALE', 'FEMALE']),
     qualification: z.string().min(1, 'Qualification is required'),

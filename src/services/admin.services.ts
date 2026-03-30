@@ -4,7 +4,7 @@
 import { httpClient } from "@/lib/axios/httpClient";
 import {  IAdmin } from "@/types/admin.types";
 import { ITeachersResponse, ITeacher, ICreateTeacherPayload, IUpdateTeacherPayload } from "@/types/teacher.types";
-import { IStudentsResponse } from "@/types/student.types";
+import type { IStudent } from "@/types/student.types";
 import { CreateOrganizationRequest, CreateOrganizationResponse, IOrganization } from "@/types/organization.types";
 import { IClass } from "@/types/class.types";
 
@@ -28,53 +28,22 @@ export const getAllTeachers = async (queryString?: string) => {
   }
 };
 
-// export const getTeacherById = async (id: string) => {
-//   try {
-//     const teacher = await httpClient.get<ITeacher>(`/teacher/${id}`);
-//     return teacher;
-//   } catch (error) {
-//     console.log("Error fetching teacher by id:", error);
-//     throw error;
-//   }
-// };
-
-export const getAllStudents = async () => {
+export const getAllStudents = async (): Promise<import("@/types/api.types").ApiResponse<IStudent[]>> => {
   try {
-    const students = await httpClient.get<IStudentsResponse>("/student");
-    return students;
+    const response = await httpClient.get<IStudent[]>('/student');
+    return response;
   } catch (error) {
-    console.log("Error fetching students:", error);
+    console.error('Error fetching students:', error);
     throw error;
   }
 };
-
-// export const getAllOrganizations = async () => {
-//   try {
-//     const organizations = await httpClient.get<IOrganization[]>("/organizations");
-//     return organizations;
-//   } catch (error) {
-//     console.log("Error fetching organizations:", error);
-//     throw error;
-//   }
-// };
-
-// services/admin.services.ts
 
 export const getAllOrganizations = async (queryString?: string) => {
-  try {
-    const organizations = await httpClient.get<IOrganization[]>(
-      queryString
-        ? `/organizations?${queryString}`
-        : "/organizations"
-    );
-
-    return organizations;
-  } catch (error) {
-    console.log("Error fetching organizations:", error);
-    throw error;
-  }
+  const response = await httpClient.get<IOrganization[]>(
+    queryString ? `/organizations?${queryString}` : "/organizations"
+  );
+  return response; // Axios response { data: [...] }
 };
-
 export const getAllClasses = async () => {
   try {
     const classes = await httpClient.get<IClass[]>("/classes");
@@ -199,16 +168,6 @@ export const updateTeacher = async (id: string, payload: IUpdateTeacherPayload) 
   }
 };
 
-// export const updateTeacher = async (id: string, payload: IUpdateTeacherPayload) => {
-//   try {
-//     const teacher = await httpClient.patch(`/teacher/${id}`, payload);
-//     return teacher;
-//   } catch (error) {
-//     console.log("Error updating teacher:", error);
-//     throw error;
-//   }
-// };
-
 export const deleteTeacher = async (id: string) => {
   try {
     await httpClient.delete(`/teacher/${id}`);
@@ -257,15 +216,6 @@ export const deleteStudent = async (id: string) => {
   }
 };
 
-// export const createOrganization = async (payload: { name: string; description: string; logo?: string }) => {
-//   try {
-//     const org = await httpClient.post('/organizations', payload);
-//     return org;
-//   } catch (error) {
-//     console.log("Error creating organization:", error);
-//     throw error;
-//   }
-// };
 
 export const createOrganization = async (payload: CreateOrganizationRequest): Promise<CreateOrganizationResponse> => {
   console.log("Sending payload to API:- ", payload);
@@ -336,6 +286,7 @@ export const createClass = async (payload: { name: string; description: string; 
     throw error;
   }
 };
+
 
 export const getClassById = async (id: string) => {
   try {
