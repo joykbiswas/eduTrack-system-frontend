@@ -6,7 +6,7 @@ import {  IAdmin } from "@/types/admin.types";
 import { ITeachersResponse, ITeacher, ICreateTeacherPayload, IUpdateTeacherPayload } from "@/types/teacher.types";
 import type { IStudent } from "@/types/student.types";
 import { CreateOrganizationRequest, CreateOrganizationResponse, IOrganization } from "@/types/organization.types";
-import { IClass } from "@/types/class.types";
+import { IClass, } from "@/types/class.types";
 
 export const getAllAdmins = async () => {
   try {
@@ -316,4 +316,3 @@ export const deleteClass = async (id: string) => {
     throw error;
   }
 };
-

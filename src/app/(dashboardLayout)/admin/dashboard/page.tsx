@@ -24,7 +24,6 @@ const AdminDashboardPage = async () => {
   const students = studentsResponse?.data ?? []
   const organizations = organizationsResponse?.data ?? []
   const classes = classesResponse?.data ?? []
-console.log(students);
   const stats = [
     {
       title: "Admins",

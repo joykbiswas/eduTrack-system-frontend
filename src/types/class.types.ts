@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // types/class.types.ts
 
 export interface IOrganization {
@@ -6,10 +6,14 @@ export interface IOrganization {
     name: string;
     description: string | null;
     parentId: string | null;
-    isDeleted: boolean;
+    isDeleted?: boolean;
     deletedAt: string | null;
     createdAt: string;
     updatedAt: string;
+    parent?: IOrganization | null;
+    children?: IOrganization[];
+    classes?: IClass[];
+    lookups?: any[];
 }
 
 export interface ITeacher {
@@ -17,21 +21,42 @@ export interface ITeacher {
     name: string;
     email: string;
     profilePhoto: string | null;
-    contactNumber: string | null;
-    address: string | null;
-    registrationNumber: string | null;
-    experience: number | null;
-    gender: string | null;
-    qualification: string | null;
-    currentWorkingPlace: string | null;
-    designation: string | null;
-    subject: string | null;
+    contactNumber: string;
+    address: string;
+    registrationNumber: string;
+    experience: number;
+    gender: string;
+    qualification: string;
+    currentWorkingPlace: string;
+    designation: string;
+    subject: string;
     averageRating: number;
     isDeleted: boolean;
     deletedAt: string | null;
     createdAt: string;
     updatedAt: string;
     userId: string;
+    user?: {
+        id: string;
+        email: string;
+        name: string;
+        role: string;
+        status: string;
+        emailVerified: boolean;
+        image: string | null;
+        isDeleted: boolean;
+        createdAt: string;
+        updatedAt: string;
+    };
+    assignedClasses?: any[];
+}
+
+export interface ITeachersResponse {
+    teachers: ITeacher[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 export interface IClass {

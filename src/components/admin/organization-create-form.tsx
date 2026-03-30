@@ -143,7 +143,7 @@ export function OrganizationCreateForm() {
                     <FormControl>
                       <Textarea 
                         placeholder="Leading educational institution..." 
-                        className="min-h-[120px]"
+                        className="min-h-30"
                         {...field}
                         value={field.value ?? ''}
                         disabled={form.formState.isSubmitting}
