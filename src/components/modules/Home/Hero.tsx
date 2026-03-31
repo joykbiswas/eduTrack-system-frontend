@@ -25,12 +25,13 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/register">
-              <Button size="lg" className="gap-2">
+            {/* <Link href="/register">
+              
+            </Link> */}
+            <Button size="lg" className="gap-2">
                 Get Started Free
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
             <Link href="#features">
               <Button size="lg" variant="outline">
                 Explore Features

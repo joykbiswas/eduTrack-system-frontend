@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { UserInfo } from "@/types/user.types"
@@ -40,19 +42,19 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
 
             <DropdownMenuSeparator/>
 
-            <DropdownMenuItem>
-                {/* <Link href={"/my-profile"}> */}
-                <User className="mr-2 h-4 w-4"/>
+            {/* <DropdownMenuItem asChild>
+                <Link href="/my-profile" className="flex items-center">
+                    <User className="mr-2 h-4 w-4"/>
                     My Profile
-                {/* </Link> */}
+                </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem>
-                <Link href={"/change-password"}>
+            <DropdownMenuItem asChild>
+                <Link href="/change-password" className="flex items-center">
                     <Key className="mr-2 h-4 w-4"/>
                     Change Password
                 </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
 
             <DropdownMenuSeparator/>
 

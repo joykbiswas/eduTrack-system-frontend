@@ -141,7 +141,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           </form.Subscribe>
         </form>
 
-        <div className="relative my-6">
+        <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300"></div>
           </div>
@@ -152,7 +152,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           </div>
         </div>
 
-        <Button variant="outline" className="w-full" onClick={() => {
+        {/* <Button variant="outline" className="w-full" onClick={() => {
             const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
             //TODO redirect path after login in frontend
             window.location.href = `${baseUrl}/auth/login/google`;
@@ -176,10 +176,10 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
             />
           </svg>
           Sign in with Google
-        </Button>
+        </Button> */}
       </CardContent>
 
-      <CardFooter className="justify-center border-t pt-4">
+      <CardFooter className="justify-center ">
         <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
             <Link

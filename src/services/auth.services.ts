@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { IRegisterResponse } from "@/types/auth.types";
 import { cookies } from "next/headers";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -90,5 +92,65 @@ export async function getUserInfo() {
     } catch (error) {
         console.error("Error fetching user info:", error);
         return null;
+    }
+}
+
+// ... existing imports ...
+
+// export interface IRegisterResponse {
+//     success: boolean;
+//     message: string;
+//     data: {
+//         token: string;
+//         accessToken: string;
+//         refreshToken: string;
+//         user: any; // আপনি চাইলে এখানে নির্দিষ্ট ইউজার টাইপ দিতে পারেন
+//         student: any;
+//     };
+// // }
+// export interface IRegisterResponse {
+//     success: boolean;
+//     message: string;
+//     data: {
+//         token: string;
+//         accessToken: string;
+//         refreshToken: string;
+//         user: {
+//             id: string;
+//             role: string;
+//             // ... অন্যান্য ফিল্ড
+//         };
+//         student: any;
+//     };
+// }
+
+/**
+ * Registers a new user and returns the auth data
+ */
+export async function registerUser(payload: any): Promise<any> {
+    try {
+        const res = await fetch(`${BASE_API_URL}/auth/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        // রেসপন্স যাই হোক (Success বা Error), JSON পার্স করুন
+        const result = await res.json();
+        
+        // যদি res.ok না হয়, তবে সার্ভার থেকে আসা message টি রিটার্ন করুন
+        if (!res.ok) {
+            return {
+                success: false,
+                message: result.message || "Registration failed from server",
+            };
+        }
+
+        return result; // সফল হলে পুরো অবজেক্ট রিটার্ন করবে
+    } catch (error) {
+        console.error("Error during registration service:", error);
+        return { success: false, message: "Network error: check your internet or server" };
     }
 }
