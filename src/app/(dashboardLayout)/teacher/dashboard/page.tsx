@@ -21,7 +21,6 @@ const TeachersDashboard = async () => {
   const cards = cardsResponse?.data ?? []
   const assessments = assessmentsResponse ?? []
   const classes = classesResponse?.data ?? []
-console.log("T DB classes", classes);
   const stats = [
     {
       title: "Story Cards",
