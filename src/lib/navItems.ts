@@ -65,11 +65,6 @@ export const teacherNavItems: NavSection[] = [
         title: "Classes",
         items: [
           {
-            title: "Class Create",
-            href: "/teacher/dashboard/classes-create",
-            icon: "Calender",
-          },
-          {
             title: "Class List",
             href: "/teacher/dashboard/classes-list",
             icon: "Calender",

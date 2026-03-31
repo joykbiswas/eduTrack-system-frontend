@@ -20,7 +20,6 @@ export const createMaterialAction = async (data: any) => {
 export const fetchAllMaterialsAction = async () => {
   try {
     const response = await materialService.getAllMaterials();
-    console.log("Response Material---", response);
     return response;
   } catch (error) {
     console.error("Error fetching materials:", error);

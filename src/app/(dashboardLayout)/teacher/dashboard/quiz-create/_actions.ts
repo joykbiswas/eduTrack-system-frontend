@@ -13,3 +13,23 @@ export const createQuizAction = async (data: IQuizFormValues) => {
     throw new Error(error.response?.data?.message || "Failed to create quiz");
   }
 };
+
+export const fetchAllQuizzesAction = async () => {
+  try {
+    return await quizService.getAllQuizzes();
+  } catch (error) {
+    console.error("Error fetching quizzes:", error);
+    throw error;
+  }
+};
+
+
+export const deleteQuizAction = async (id: string) => {
+    try {
+        const response = await quizService.deleteQuiz(id);
+        return response;
+    } catch (error) {
+        console.error("Error deleting word story card:", error);
+        throw error;
+    }
+};

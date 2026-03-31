@@ -6,4 +6,15 @@ export const assessmentService = {
     const response = await httpClient.post("/assessments", data);
     return response.data;
   },
+
+   getAllAssessment: async (): Promise<any> => {
+    const response = await httpClient.get("/assessments");
+    return response;
+  },
+
+  
+  deleteAssessment: async (id: string): Promise<any> => {
+    const response = await httpClient.delete(`/assessments/${id}`);
+    return response;
+  },
 };
