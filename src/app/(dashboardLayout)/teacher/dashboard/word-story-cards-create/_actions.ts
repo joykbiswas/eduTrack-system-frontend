@@ -37,3 +37,12 @@ export const deleteWordStoryCard = async (id: string) => {
         throw error;
     }
 };
+export const getWordStoryCardById = async (id: string) => {
+    try {
+        const response = await wordStoryCardService.getWordStoryCardById(id);
+        return response;
+    } catch (error) {
+        console.error("Error fetching card details:", error);
+        throw error;
+    }
+};
