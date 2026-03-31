@@ -61,16 +61,7 @@ export const teacherNavItems: NavSection[] = [
           },
         ],
       },
-      {
-        title: "Classes",
-        items: [
-          {
-            title: "Class List",
-            href: "/teacher/dashboard/classes-list",
-            icon: "Calender",
-          },
-        ],
-      },
+      
       {
         title: "Quizzes",
         items: [
@@ -101,7 +92,26 @@ export const teacherNavItems: NavSection[] = [
           },
         ],
       },
-     
+     {
+        title: "Students Task Management",
+        items: [
+          {
+            title: "Students List",
+            href: "/teacher/dashboard/student-list",
+            icon: "Users",
+          },
+        ],
+      },
+      {
+        title: "Classes",
+        items: [
+          {
+            title: "Class List",
+            href: "/teacher/dashboard/classes-list",
+            icon: "Calender",
+          },
+        ],
+      },
     ],
   },
 ];
