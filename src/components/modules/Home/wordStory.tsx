@@ -29,12 +29,12 @@ export default function WordStory() {
 
   return (
     <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-900">Featured Stories</h2>
-            <p className="text-slate-500">Master vocabulary through engaging narratives</p>
-          </div>
+      <div className="mx-auto max-w-7xl px-6 py-4">
+        <div className="mb-14 text-center">
+          
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Featured Stories</h2>
+            <p className="mt-4 text-lg text-muted-foreground">Master vocabulary through engaging narratives</p>
+          
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

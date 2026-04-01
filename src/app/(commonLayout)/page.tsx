@@ -1,3 +1,4 @@
+import DashboardPreview from "@/components/modules/Home/DashboardPreview";
 import Features from "@/components/modules/Home/Features";
 import Footer from "@/components/modules/Home/Footer";
 import Hero from "@/components/modules/Home/Hero";
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <WordStory />
       <Features />
+      <DashboardPreview />
       <Statistics />
       <Testimonials />
       <Footer />

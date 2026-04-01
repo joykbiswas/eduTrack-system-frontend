@@ -11,3 +11,10 @@ export const taskService = {
         return response;
     },
 };
+
+export const authService = {
+  getMe: async (): Promise<any> => {
+    const response = await httpClient.get("/auth/me");
+    return response;
+  },
+};

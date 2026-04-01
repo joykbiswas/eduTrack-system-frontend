@@ -17,11 +17,11 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
           href: defaultDashboard,
           icon: "LayoutDashboard",
         },
-        {
-          title: "My Profile",
-          href: `/my-profile`,
-          icon: "User",
-        },
+        // {
+        //   title: "My Profile",
+        //   href: `/my-profile`,
+        //   icon: "User",
+        // },
       ],
     },
   ];
@@ -197,28 +197,13 @@ export const adminNavItems: NavSection[] = [
 export const studentNavItems: NavSection[] = [
   {
     title: "My Learning",
-    items: [
-      {
-        title: "Dashboard",
-        href: "/dashboard",
-        icon: "LayoutDashboard",
-      },
-      {
-        title: "My Classes",
-        items: [
-          {
-            title: "Classes List",
-            href: "/dashboard/class-list",
-            icon: "Calender",
-          },
-        ],
-      },
+    items: [    
       {
         title: "Tasks",
         items: [
           {
             title: "Tasks List",
-            href: "/dashboard/tasks",
+            href: "/dashboard/task-list",
             icon: "ClipboardList",
           },
         ],
