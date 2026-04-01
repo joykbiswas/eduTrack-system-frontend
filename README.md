@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduTrack System Frontend 🏫📱
 
-## Getting Started
+## Project Name
+**EduTrack** - Role-Based Education Management System Frontend
 
-First, run the development server:
+## Project Description
+EduTrack is a modern, responsive web application built with **Next.js** for managing educational content and users across four roles: **Admin**, **Teacher**, **Student**, and **Super Admin**. 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**Core Features**:
+- Admin dashboard for CRUD operations on Admins, Teachers, Students, Organizations, Classes
+- Teacher tools for creating **Word-Story Cards** bundled with Quizzes, Assessments, Materials
+- Student home with published cards, interactive quizzes, and progress tracking
+- Secure Better auth, real-time data with TanStack Query, shadcn/ui components
+
+## 🌐 Live URLs
+- **Frontend**: https://edu-track-system-frontend.vercel.app/
+- **Backend**: https://edu-track-system-backend.vercel.app/
+
+## ✨ Features
+```
+🔐 Role-Based Authentication (Better Auth)
+📊 Admin CRUD Dashboards (DataTables + Forms + Delete Confirm)
+📚 Word-Story Cards (Teacher Create → Student Interact)
+✅ Quizzes & Assessments (Multiple Choice + True/False)
+📱 Responsive shadcn/ui Components 
+⚡ Real-time Data (TanStack Query Mutations + Infinite Scroll)
+📝 Form Validation (React Hook Form + Zod Schemas)
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Technologies Used
+```
+🌐 Frontend: Next.js, TypeScript, Tailwind css, Shadcn ui, zod, Tanstack,  
+💾 Backend: Node.js, Express.js, Prisma,  Tanstack,  axios
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
 
-## Learn More
+### Setup instructions
+```bash
+git clone <repo> eduTrack-frontend
+cd eduTrack-frontend
+pnpm install
+pnpm dev
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
