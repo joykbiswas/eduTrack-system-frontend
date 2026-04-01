@@ -117,11 +117,11 @@ export function OrganizationDataTable() {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <Link href={`/admin/dashboard/organization-edit/${row.original.id}`}>
+          {/* <Link href={`/admin/dashboard/organization-edit/${row.original.id}`}>
             <Button size="sm" variant="ghost">
               <Pencil className="h-4 w-4" />
             </Button>
-          </Link>
+          </Link> */}
 
           <DeleteDialog
             id={row.original.id}

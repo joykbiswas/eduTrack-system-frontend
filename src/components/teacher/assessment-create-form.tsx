@@ -19,10 +19,10 @@ export default function AssessmentCreateForm({ wordCards }: { wordCards: any[] }
   const form = useForm<any>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
-      title: "",
+      title: "True/False Test",
       description: "",
       cardId: "",
-      passingScore: 70,
+      passingScore: 10,
       questions: [{ question: "", answer: true }],
     },
   });
@@ -54,11 +54,11 @@ export default function AssessmentCreateForm({ wordCards }: { wordCards: any[] }
             name= "cardId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Select Word Card</FormLabel>
+                <FormLabel>Select Story Card</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a card" />
+                      <SelectValue placeholder="Select a story card" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

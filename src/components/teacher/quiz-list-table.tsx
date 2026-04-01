@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, ListChecks, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -24,7 +24,42 @@ export function QuizDataTable() {
   });
 
   const quizzesData = response?.data || [];
+
   const columns: ColumnDef<any>[] = [
+    {
+      id: "expand",
+      header: "",
+      cell: ({ row }) => {
+        // Options usually exist for Multiple Choice
+        const hasOptions = row.original.options && Object.keys(row.original.options).length > 0;
+        if (!hasOptions) return <div className="w-4" />;
+
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              row.getToggleExpandedHandler()();
+            }}
+            className="flex items-center justify-center"
+          >
+            {row.getIsExpanded() ? (
+              <ChevronDown className="h-4 w-4 text-primary" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            )}
+          </button>
+        );
+      },
+    },
+    {
+      id: "cardTitle",
+      header: "Story Card",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-blue-50/50">
+          {row.original.card?.title || "N/A"}
+        </Badge>
+      ),
+    },
     {
       accessorKey: "question",
       header: "Question",
@@ -33,27 +68,19 @@ export function QuizDataTable() {
           <span className="font-medium line-clamp-1">
             {row.original.question}
           </span>
-          <span className="text-xs text-muted-foreground">
-            {row.original.type}
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+            {row.original.type?.replace("_", " ")}
           </span>
         </div>
       ),
     },
-    {
-      id: "cardTitle",
-      header: "Word Card",
-      cell: ({ row }) => (
-        <Badge variant="outline" className="bg-blue-50/50">
-          {row.original.card?.title || "N/A"}
-        </Badge>
-      ),
-    },
+    
     {
       accessorKey: "correctAnswer",
       header: "Answer",
       cell: ({ row }) => (
-        <Badge variant="secondary" className="font-bold">
-          {row.original.correctAnswer}
+        <Badge variant="secondary" className="font-bold text-primary">
+          Option {row.original.correctAnswer}
         </Badge>
       ),
     },
@@ -78,30 +105,68 @@ export function QuizDataTable() {
     {
       id: "actions",
       cell: ({ row }) => (
-        <div className="flex gap-1">
-          {/* <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Link href={`/teacher/dashboard/quiz-edit/${row.original.id}`}>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <Pencil className="h-4 w-4" />
-            </Button>
-          </Link> */}
-
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
           <DeleteDialog
             id={row.original.id}
-            name={row.original.title}
+            name={row.original.question}
             deleteFn={async (id) => {
               await deleteQuizAction(id);
             }}
             onDelete={() => {
-              queryClient.invalidateQueries({ queryKey: ["materials"] });
+              queryClient.invalidateQueries({ queryKey: ["quizzes"] });
             }}
           />
         </div>
       ),
     },
   ];
+
+  // Render SubComponent to show Multiple Choice Options
+  const renderSubComponent = (row: any) => {
+    const options = row.original.options;
+    const correctKey = row.original.correctAnswer;
+
+    if (!options) return null;
+
+    return (
+      <div className="rounded-lg border bg-muted/5 m-3 shadow-sm overflow-hidden">
+        <div className="bg-muted/20 px-4 py-2 border-b flex items-center gap-2">
+          <ListChecks className="h-4 w-4 text-primary" />
+          <h4 className="text-sm font-bold">Quiz Options</h4>
+        </div>
+        
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {Object.entries(options).map(([key, value]: [string, any]) => {
+            const isCorrect = key === correctKey;
+            return (
+              <div 
+                key={key} 
+                className={`flex items-center justify-between p-3 rounded-md border ${
+                  isCorrect 
+                    ? "bg-green-50 border-green-200 ring-1 ring-green-200" 
+                    : "bg-background border-border"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`flex items-center justify-center h-6 w-6 rounded-full text-xs font-bold ${
+                    isCorrect ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"
+                  }`}>
+                    {key}
+                  </span>
+                  <span className={`text-sm ${isCorrect ? "font-semibold text-green-900" : "text-foreground"}`}>
+                    {value}
+                  </span>
+                </div>
+                {isCorrect && (
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -125,6 +190,9 @@ export function QuizDataTable() {
         isLoading={isLoading}
         searchColumn="question"
         searchPlaceholder="Search by question..."
+        enableExpand={true}
+        renderSubComponent={renderSubComponent}
+        rowCanExpand={(row) => row.original.options && Object.keys(row.original.options).length > 0}
       />
     </div>
   );

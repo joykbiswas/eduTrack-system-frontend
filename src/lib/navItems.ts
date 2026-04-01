@@ -42,7 +42,7 @@ export const teacherNavItems: NavSection[] = [
           {
             title: "Card List",
             href: "/teacher/dashboard/word-story-cards-list",
-            icon: "BookOpen",
+            icon: "LayoutList",
           },
         ],
       },
@@ -57,7 +57,7 @@ export const teacherNavItems: NavSection[] = [
           {
             title: "Assessment List",
             href: "/teacher/dashboard/assessment-list",
-            icon: "ClipboardList",
+            icon: "LayoutList",
           },
         ],
       },
@@ -68,12 +68,12 @@ export const teacherNavItems: NavSection[] = [
           {
             title: "Quiz Create",
             href: "/teacher/dashboard/quiz-create",
-            icon: "Calender",
+            icon: "FilePlus2",
           },
           {
             title: "Quiz List",
             href: "/teacher/dashboard/quiz-list",
-            icon: "Calender",
+            icon: "LayoutList",
           },
         ],
       },
@@ -83,12 +83,12 @@ export const teacherNavItems: NavSection[] = [
           {
             title: "material Create",
             href: "/teacher/dashboard/material-create",
-            icon: "Calender",
+            icon: "FileText",
           },
           {
             title: "material List",
             href: "/teacher/dashboard/material-list",
-            icon: "Calender",
+            icon: "LayoutList",
           },
         ],
       },
@@ -146,7 +146,7 @@ export const adminNavItems: NavSection[] = [
           {
             title: "Teachers List",
             href: "/admin/dashboard/teacher-list",
-            icon: "UserCog",
+            icon: "LayoutList",
           },
         ],
       },
@@ -171,7 +171,7 @@ export const adminNavItems: NavSection[] = [
           {
             title: "Organization List",
             href: "/admin/dashboard/organization-list",
-            icon: "Building2",
+            icon: "LayoutList",
           },
         ],
       },
@@ -186,7 +186,7 @@ export const adminNavItems: NavSection[] = [
           {
             title: "Classes List",
             href: "/admin/dashboard/class-list",
-            icon: "Home",
+            icon: "LayoutList",
           },
         ],
       },

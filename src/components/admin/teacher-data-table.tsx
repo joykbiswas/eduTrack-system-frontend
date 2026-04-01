@@ -155,14 +155,14 @@ export function TeacherDataTable() {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex gap-1">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          {/* <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
             <Eye className="h-4 w-4" />
           </Button>
           <Link href={`/admin/dashboard/teacher-edit/${row.original.id}`}>
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Pencil className="h-4 w-4" />
             </Button>
-          </Link>
+          </Link> */}
           <DeleteDialog
             id={row.original.id}
             name={row.original.name}

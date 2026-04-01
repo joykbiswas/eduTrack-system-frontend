@@ -25,41 +25,45 @@ import { IStudent } from "@/types/student.types";
 import { getAllWordStoryCards } from "@/app/(dashboardLayout)/teacher/dashboard/word-story-cards-create/_actions";
 import { AssignTaskModal } from "../teacher/assign-task-modal";
 import { DeleteDialog } from "./delete-dialog";
-import { deleteAssignedTaskAction } from "@/app/(dashboardLayout)/teacher/dashboard/student-list/_actions";
+import { deleteAssignedTaskAction, fetchAllStudentsAction } from "@/app/(dashboardLayout)/teacher/dashboard/student-list/_actions";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+// const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
-const fetchStudents = async (): Promise<IStudent[]> => {
-  const response = await fetch(`${baseUrl}/student`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
+// const fetchStudents = async (): Promise<IStudent[]> => {
+//   const response = await fetch(`${baseUrl}/student`, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     credentials: "include",
+//   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch students");
-  }
+//   if (!response.ok) {
+//     throw new Error("Failed to fetch students");
+//   }
 
-  const json = await response.json();
-  return json?.data ?? [];
-};
+//   const json = await response.json();
+//   return json?.data ?? [];
+// };
 
 
 
 export function TeacherAssientStudentDataTable() {
+
   const queryClient = useQueryClient();
 
-  const { data: response, isLoading } = useQuery<IStudent[]>({
+  const { data: response, isLoading } = useQuery({
     queryKey: ["students"],
-    queryFn: fetchStudents,
+    queryFn: () => fetchAllStudentsAction(),
   });
 
   const data = response || [];
-  console.log("===data", data);
+  
 
-  const { data: cardResponse, isLoading: isCardsLoading } = useQuery({
+  // const data = response || [];
+  console.log("===data ====", data);
+
+  const { data: cardResponse } = useQuery({
     queryKey: ["word-story-cards"],
     queryFn: () => getAllWordStoryCards(),
   });
@@ -280,12 +284,7 @@ const renderSubComponent = (row: any) => {
             Manage student records and view assigned task progress.
           </p>
         </div>
-        <Link href="/admin/dashboard/student-create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Student
-          </Button>
-        </Link>
+        
       </div>
 
       <DataTable

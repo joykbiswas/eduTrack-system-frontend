@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { getAllWordStoryCards } from "../word-story-cards-create/_actions";
 import { TeacherAssientStudentDataTable } from "@/components/admin/teacher-assient-student-list";
+import { fetchAllStudentsAction } from "./_actions";
 
 export default async function StudentListPage() {
   const queryClient = new QueryClient();
@@ -12,6 +13,11 @@ export default async function StudentListPage() {
   await queryClient.prefetchQuery({
     queryKey: ["word-story-cards"],
     queryFn: () => getAllWordStoryCards(),
+  });
+  
+  await queryClient.prefetchQuery({
+    queryKey: ["students"],
+    queryFn: () => fetchAllStudentsAction(),
   });
 
   return (

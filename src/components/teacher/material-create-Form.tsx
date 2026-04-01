@@ -67,7 +67,7 @@ export default function MaterialCreateForm({ wordCards }: MaterialCreateFormProp
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={isCardsLoading ? "Loading cards..." : "Select a card"} />
+                    <SelectValue placeholder={isCardsLoading ? "Loading cards ...." : "Select a story card"} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -96,7 +96,7 @@ export default function MaterialCreateForm({ wordCards }: MaterialCreateFormProp
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
@@ -116,7 +116,7 @@ export default function MaterialCreateForm({ wordCards }: MaterialCreateFormProp
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
         </div>
 
         <FormField

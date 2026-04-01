@@ -23,26 +23,26 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { DeleteDialog } from "../admin/delete-dialog"; // পাথ চেক করে নিন
-import { IStudent } from "@/types/student.types";
+import { fetchAllStudentsAction } from "@/app/(dashboardLayout)/teacher/dashboard/student-list/_actions";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
-const fetchStudents = async (): Promise<IStudent[]> => {
-  const response = await fetch(`${baseUrl}/student`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  });
+// const fetchStudents = async (): Promise<IStudent[]> => {
+//   const response = await fetch(`${baseUrl}/student`, {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     credentials: "include",
+//   });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch students");
-  }
+//   if (!response.ok) {
+//     throw new Error("Failed to fetch students");
+//   }
 
-  const json = await response.json();
-  return json?.data ?? [];
-};
+//   const json = await response.json();
+//   return json?.data ?? [];
+// };
 
 const deleteStudentClient = async (id: string) => {
   const response = await fetch(`${baseUrl}/student/${id}`, {
@@ -61,10 +61,13 @@ const deleteStudentClient = async (id: string) => {
 export function StudentDataTable() {
   const queryClient = useQueryClient();
 
-  const { data: response, isLoading } = useQuery<IStudent[]>({
-    queryKey: ["students"],
-    queryFn: fetchStudents,
-  });
+    
+    const { data: response, isLoading } = useQuery({
+      queryKey: ["students"],
+      queryFn: () => fetchAllStudentsAction(),
+    });
+  
+    
 
   const data = response || [];
 
@@ -210,12 +213,7 @@ export function StudentDataTable() {
             Manage student records and view assigned task progress.
           </p>
         </div>
-        <Link href="/admin/dashboard/student-create">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Student
-          </Button>
-        </Link>
+        
       </div>
 
       <DataTable

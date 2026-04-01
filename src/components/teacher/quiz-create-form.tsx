@@ -55,7 +55,7 @@ export default function CreateQuizForm() {
     mutationFn: createQuizAction,
     onSuccess: () => {
       toast.success("Quiz created successfully!");
-      router.push("/dashboard/quizzes"); // Adjust path as needed
+      router.push("/teacher/dashboard/quiz-list"); 
     },
     onError: (error: any) => {
       toast.error(error.message);
